@@ -32,7 +32,8 @@
 #include <nuttx/board.h>
 #include <nuttx/fs/fs.h>
 #include <nuttx/input/buttons.h>
-
+// #include "sys/types.h"
+#include "mindgrove_gpio.h"
 #include "secure-iot.h"
 
 
@@ -48,7 +49,7 @@
 int mindgrove_bringup(void)
 {
 
-  // int ret = OK;
+  int ret = 0;
 //   char devpath[12];
 // #ifdef CONFIG_FS_PROCFS
 //   /* Mount the procfs file system */
@@ -60,15 +61,15 @@ int mindgrove_bringup(void)
 //     }
 // #endif
 
-// #ifdef CONFIG_DEV_GPIO
+#ifdef CONFIG_DEV_GPIO
 
-//   ret = shakti_gpio_init();
+  ret = mindgrove_gpio_init();
 
-//   if (ret<0){
-//     serr("ERROR: Failed to initialize GPIO\n");
-//   }
+  if (ret<0){
+    serr("ERROR: Failed to initialize GPIO\n");
+  }
   
-// #endif
+#endif
 
 // #ifdef CONFIG_PWM
 //   ret = board_pwm_setup();

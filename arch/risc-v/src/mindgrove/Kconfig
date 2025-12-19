@@ -23,4 +23,17 @@ config MINDGROVE_UART0
 	select ARCH_HAVE_SERIAL_TERMIOS
 	select MINDGROVE_UART
 
+config MINDGROVE_HAVE_GPIO
+    bool
+    default y
+    select DEV_GPIO
+
+config MINDGROVE_GPIO
+    bool "GPIO Support"
+    default y
+    depends on MINDGROVE_HAVE_GPIO
+    select DEV_GPIO                   # NuttX GPIO framework
+	depends on DEV_GPIO
+
+
 # endmenu

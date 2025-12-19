@@ -27,6 +27,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 #include <stdint.h>
+#include <nuttx/ioexpander/gpio.h>
 
 #ifndef SHAKTI_GPIO_H
 #define SHAKTI_GPIO_H
@@ -41,11 +42,36 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define GPIO_DATA_REG (uint32_t*) (GPIO_START + (1 * GPIO_OFFSET ))
 #define GPIO_INTERRUPT_CONFIG_REG (uint32_t*) (GPIO_START + (6 * GPIO_OFFSET ))
 
-bool read_gpio(uint32_t);
+#define GPIO_DIRECTION_OFFSET      0x00
+#define GPIO_DATA_OFFSET           0x08
+#define GPIO_SET_OFFSET            0x10
+#define GPIO_CLEAR_OFFSET          0x18
+#define GPIO_TOGGLE_OFFSET         0x20
+#define GPIO_INTR_OFFSET           0x30
+#define GPIO_PULLUP_OFFSET         0x38
+#define GPIO_BUFFER_CTRL_OFFSET    0x40
+#define GPIO_BUFFER_STATUS_OFFSET  0x48
 
-void set_gpio(uint32_t,bool);
+#define GPIO_BUFFER_2_CLK_OFFSET   0x50
+#define GPIO_BUFFER_4_CLK_OFFSET   0x58
+#define GPIO_BUFFER_8_CLK_OFFSET   0x60
+#define GPIO_BUFFER_12_CLK_OFFSET  0x68
 
-void configure_gpio(uint32_t,bool);
+#define GPIO_BUFFER_2_DATA_OFFSET  0x70
+#define GPIO_BUFFER_4_DATA_OFFSET  0x78
+#define GPIO_BUFFER_8_DATA_OFFSET  0x80
+#define GPIO_BUFFER_12_DATA_OFFSET 0x88
 
-int shakti_gpio_init(void);
+
+
+
+int mg_go_read(FAR struct gpio_dev_s *dev, FAR bool *value);
+int mg_go_write(FAR struct gpio_dev_s *dev, bool value);
+int mg_go_attach(FAR struct gpio_dev_s *dev, pin_interrupt_t cb);
+int mg_go_enable(FAR struct gpio_dev_s *dev, bool enable);
+int mg_go_setpintype(FAR struct gpio_dev_s *dev, enum gpio_pintype_e pintype);
+int mindgrove_gpio_init(void);
+
+
+
 #endif

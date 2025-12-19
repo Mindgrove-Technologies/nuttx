@@ -4335,6 +4335,7 @@ extern volatile uint64_t CLOCK_FREQUENCY_BASE;
 #define GPTIMER_REG(x)  ((GPTIMER_Type*)(GPTIMER_BASE + (x)*GPTIMER_OFFSET))
 #define PWM_REG(x)      ((PWM_Type*)(PWM_BASE + (x)*PWM_OFFSET))
 #define GPIO_REG        ((GPIO_Type*)(GPIO_BASE))
+#define GPIO_PINMUX_REG ((GPIO_PINMUX_Type*)(GPIO_PINMUX_BASE))
 #define OTP             ((OTP_Type*)OTP_BASE)
 #define ADC             ((ADC_Type *)ADC_BASE)
 #define ITRACE          ((ITRACE_Type*)ITRACE_BASE)
