@@ -41,11 +41,13 @@
      {
       i++;
        *dest++ = 0;
+       
       //  asm volatile("fence.i");
-      if (i==5580){
-        for (int j=0;j<1000;j++)
-        asm volatile ("nop");
-      }
+      // if (i==5580){
+      //   asm volatile ("ebreak");
+      //   for (int j=0;j<1000;j++)
+      //   asm volatile ("nop");
+      // }
      }
 
 
