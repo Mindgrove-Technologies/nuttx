@@ -33,6 +33,8 @@
 #include <nuttx/fs/fs.h>
 #include <nuttx/input/buttons.h>
 #include "mindgrove_spi.h"
+#include <nuttx/spi/slave.h>
+
 #include <nuttx/spi/spi_transfer.h>
 #include "secure-iot.h"
 #include <nuttx/spi/spi.h>
@@ -125,74 +127,115 @@ int mindgrove_bringup(void)
 //     }
     
 // #endif
-
-
 // #if defined(CONFIG_MINDGROVE_SPI)
-//   struct spi_dev_s *spi0;
-// printf("debug print\n\r");
-//   spi0 = mg_spibus_initialize(0);
 
-//   if (spi0==NULL)
+//   struct spi_slave_ctrlr_s *slave0;
+
+//   printf("debug print\n\r");
+
+//   slave0 = mg_spislave_initialize(0);
+
+//   if (slave0 == NULL)
 //     {
-//       _alert("ERROR: SPI0 init failed\n");
+//       _alert("ERROR: SPI SLAVE0 init failed\n");
 //       return -ENODEV;
 //     }
-// #ifdef CONFIG_SPI_DRIVER
-//   int ret = spi_register(spi0, 0); // This creates /dev/spi0
-//   if (ret < 0)
+
+
+
+#if defined(CONFIG_MINDGROVE_SPI)
+  struct spi_dev_s *spi0;
+printf("debug print\n\r");
+  spi0 = mg_spibus_initialize(0);
+
+  if (spi0==NULL)
+    {
+      _alert("ERROR: SPI0 init failed\n");
+      return -ENODEV;
+    }
+#ifdef CONFIG_SPI_DRIVER
+  int ret = spi_register(spi0, 0); // This creates /dev/spi0
+  if (ret < 0)
+    {
+      _alert("ERROR: Failed to register /dev/spi0: %d\n", ret);
+    }
+#endif
+
+#endif
+
+#if defined(CONFIG_MINDGROVE_SPI)
+
+  struct spi_slave_ctrlr_s *slave0;
+
+
+  printf("debug print\n\r");
+
+  slave0 = mg_spislave_initialize(0);
+
+  if (slave0 == NULL)
+    {
+      _alert("ERROR: SPI SLAVE0 init failed\n");
+      return -ENODEV;
+    }
+
+#ifdef CONFIG_SPI_SLAVE_DRIVER
+  ret = spi_slave_register(slave0, 0);  // Creates /dev/spislv0
+
+  if (ret < 0)
+    {
+      _alert("ERROR: Failed to register /dev/spislv0: %d\n", ret);
+    }
+#endif
+
+#endif
+
+// struct spi_dev_s *spi;
+//   int ret;
+
+// #if defined(CONFIG_MINDGROVE_SPI0)
+//   spi = mg_spibus_initialize(0);
+//   if (spi != NULL)
 //     {
-//       _alert("ERROR: Failed to register /dev/spi0: %d\n", ret);
+// #ifdef CONFIG_SPI_DRIVER
+//       ret = spi_register(spi, 0); /* Creates /dev/spi0 */
+//       if (ret < 0) _alert("ERROR: Failed to register SPI0: %d\n", ret);
+// #endif
 //     }
 // #endif
+
+// #if defined(CONFIG_MINDGROVE_SPI1)
+//   spi = mg_spibus_initialize(1);
+//   if (spi != NULL)
+//     {
+// #ifdef CONFIG_SPI_DRIVER
+//       ret = spi_register(spi, 1); /* Creates /dev/spi1 */
+//       if (ret < 0) _alert("ERROR: Failed to register SPI1: %d\n", ret);
+// #endif
+//     }
 // #endif
 
-struct spi_dev_s *spi;
-  int ret;
+// #if defined(CONFIG_MINDGROVE_SPI2)
 
-#if defined(CONFIG_MINDGROVE_SPI0)
-  spi = mg_spibus_initialize(0);
-  if (spi != NULL)
-    {
-#ifdef CONFIG_SPI_DRIVER
-      ret = spi_register(spi, 0); /* Creates /dev/spi0 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI0: %d\n", ret);
-#endif
-    }
-#endif
+//   spi = mg_spibus_initialize(2);
+//   if (spi != NULL)
+//     {
+// #ifdef CONFIG_SPI_DRIVER
+//       ret = spi_register(spi, 2); /* Creates /dev/spi2 */
+//       if (ret < 0) _alert("ERROR: Failed to register SPI2: %d\n", ret);
+// #endif
+//     }
+// #endif
 
-#if defined(CONFIG_MINDGROVE_SPI1)
-  spi = mg_spibus_initialize(1);
-  if (spi != NULL)
-    {
-#ifdef CONFIG_SPI_DRIVER
-      ret = spi_register(spi, 1); /* Creates /dev/spi1 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI1: %d\n", ret);
-#endif
-    }
-#endif
-
-#if defined(CONFIG_MINDGROVE_SPI2)
-
-  spi = mg_spibus_initialize(2);
-  if (spi != NULL)
-    {
-#ifdef CONFIG_SPI_DRIVER
-      ret = spi_register(spi, 2); /* Creates /dev/spi2 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI2: %d\n", ret);
-#endif
-    }
-#endif
-
-#if defined(CONFIG_MINDGROVE_SPI3)
-  spi = mg_spibus_initialize(3);
-  if (spi != NULL)
-    {
-#ifdef CONFIG_SPI_DRIVER
-      ret = spi_register(spi, 3); /* Creates /dev/spi3 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI3: %d\n", ret);
-#endif
-    }
-#endif
+// #if defined(CONFIG_MINDGROVE_SPI3)
+//   spi = mg_spibus_initialize(3);
+//   if (spi != NULL)
+//     {
+// #ifdef CONFIG_SPI_DRIVER
+//       ret = spi_register(spi, 3); /* Creates /dev/spi3 */
+//       if (ret < 0) _alert("ERROR: Failed to register SPI3: %d\n", ret);
+// #endif
+//     }
+// #endif
 
 
 //   /* Register the DAC driver at "/dev/dac0" */

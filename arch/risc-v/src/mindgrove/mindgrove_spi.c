@@ -14,6 +14,8 @@
 #include <nuttx/spi/spi.h>
 #include <debug.h>
 #include <arch/board/board.h>
+#include <nuttx/spi/slave.h>
+
 #include "riscv_internal.h"
 
 #define MG_SPI0_BASE 0x20000u
@@ -48,13 +50,25 @@ typedef uint8_t spi_hwfeatures_t;
 struct mg_spi_priv_s
 {
   /* Interfaces */
-  struct spi_dev_s spi; /* Master interface (MUST be first) */
-
 #ifdef CONFIG_SPI_SLAVE
   struct spi_slave_ctrlr_s slave_ctrlr; /* Slave interface */
   struct spi_slave_dev_s *sdev;         /* Upper-half callback pointer */
+ FAR void *rxbuffer;
+ size_t nwords;
+     
 #endif
+  
+  struct spi_dev_s spi; /* Master interface (MUST be first) */
 
+// #ifdef CONFIG_SPI_SLAVE
+//   struct spi_slave_ctrlr_s slave_ctrlr; /* Slave interface */
+//   struct spi_slave_dev_s *sdev;         /* Upper-half callback pointer */
+//  FAR void *rxbuffer;
+//  size_t nwords;
+     
+// #endif
+
+        
   /* Hardware State */
   uintptr_t hw_base; /* SPI base address */
   bool enabled;
@@ -70,17 +84,17 @@ struct mg_spi_priv_s
   mutex_t lock;   /* SPI bus lock */
 };
 
-// #ifdef CONFIG_SPI_SLAVE
-// static void mg_spi_slave_bind(FAR struct spi_slave_ctrlr_s *ctrlr,
-//                               FAR struct spi_slave_dev_s *sdev,
-//                               enum spi_slave_mode_e mode, int nbits);
-// static void mg_spi_slave_unbind(FAR struct spi_slave_ctrlr_s *ctrlr);
-// static int mg_spi_slave_enqueue(FAR struct spi_slave_ctrlr_s *ctrlr,
-//                                 FAR const void *data, size_t nwords);
-// static bool mg_spi_slave_qfull(FAR struct spi_slave_ctrlr_s *ctrlr);
-// static void mg_spi_slave_qflush(FAR struct spi_slave_ctrlr_s *ctrlr);
-// static size_t mg_spi_slave_qpoll(FAR struct spi_slave_ctrlr_s *ctrlr);
-// #endif
+#ifdef CONFIG_SPI_SLAVE
+static void mg_spi_slave_bind(FAR struct spi_slave_ctrlr_s *ctrlr,
+                              FAR struct spi_slave_dev_s *sdev,
+                              enum spi_slave_mode_e mode, int nbits);
+static void mg_spi_slave_unbind(FAR struct spi_slave_ctrlr_s *ctrlr);
+static int mg_spi_slave_enqueue(FAR struct spi_slave_ctrlr_s *ctrlr,
+                                FAR const void *data, size_t nwords);
+static bool mg_spi_slave_qfull(FAR struct spi_slave_ctrlr_s *ctrlr);
+static void mg_spi_slave_qflush(FAR struct spi_slave_ctrlr_s *ctrlr);
+static size_t mg_spi_slave_qpoll(FAR struct spi_slave_ctrlr_s *ctrlr);
+#endif
 
 static int mg_spi_lock(FAR struct spi_dev_s *dev, bool lock);
 static uint32_t mg_spi_setfrequency(FAR struct spi_dev_s *dev,
@@ -136,6 +150,7 @@ static struct mg_spi_priv_s g_mg_spi0_priv =
         .hw_base = MG_SPI0_BASE,
         .enabled = false,
         .lock = NXMUTEX_INITIALIZER,
+
 };
 
 static struct mg_spi_priv_s g_mg_spi1_priv =
@@ -170,139 +185,163 @@ static struct mg_spi_priv_s g_mg_spi3_priv =
         .enabled = false,
         .lock = NXMUTEX_INITIALIZER,
 };
+static void mg_spi_slave_unbind(FAR struct spi_slave_ctrlr_s *ctrlr)
+{
+  struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)ctrlr;
 
-// static void mg_spi_slave_bind(FAR struct spi_slave_ctrlr_s *ctrlr,
-//                               FAR struct spi_slave_dev_s *sdev,
-//                               enum spi_slave_mode_e mode, int nbits)
-// {
-//   struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)ctrlr;
+  /* Clear upper-half callback */
+  priv->sdev = NULL;
 
-//   /* 1. Save the callback pointer (sdev) so we can use it in our ISR */
-//   priv->sdev = sdev;
-//   priv->is_slave = true;
+  /* Optionally disable slave mode */
+  priv->is_slave = false;
+}
 
-//   /* 2. Hardware Switch: Set the SPI peripheral to Slave Mode */
-//   // Example: Setting a bit in your CONTROL register
-//   modifyreg32(MG_SPI_CONTROL, MG_SPI_MODE, MG_SPI_SLAVE_MODE);
+static size_t mg_spi_slave_qpoll(FAR struct spi_slave_ctrlr_s *ctrlr)
+{
+  struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)ctrlr;
 
-//   /* 3. Configure the hardware using your existing master-logic functions */
-//   modifyreg32(MG_SPI_CONTROL,
-//               0,
-//               MG_SPI_MISO_OUTEN_MASK);
+  /* Return how many words are available in RX FIFO */
 
-//   modifyreg32(MG_SPI_CONTROL, MG_SPI_SCLK_OUTEN_MASK | MG_SPI_NCS_OUTEN_MASK | MG_SPI_MOSI_OUTEN_MASK, 0);
+  uint32_t depth =
+    (getreg16(MG_SPI_COMM_STAT) & MG_SPI_COMM_STATUS_RX_DEPTH_MASK) >> 6;
 
-//   mg_spi_setmode((struct spi_dev_s *)priv, (enum spi_mode_e)mode);
-//   mg_spi_setbits((struct spi_dev_s *)priv, nbits);
+  return depth;
+}
+static void mg_spi_slave_bind(FAR struct spi_slave_ctrlr_s *ctrlr,
+                              FAR struct spi_slave_dev_s *sdev,
+                              enum spi_slave_mode_e mode, int nbits)
+{
+  struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)ctrlr;
 
-//   /* 4. Let the upper half know the Slave is now selected/ready */
-//   SPIS_DEV_SELECT(sdev, true);
-// }
+  /* 1. Save the callback pointer (sdev) so we can use it in our ISR */
+  priv->sdev = sdev;
+  priv->is_slave = true;
+printf("priv->sdev%x",sdev);
+  /* 2. Hardware Switch: Set the SPI peripheral to Slave Mode */
+  // Example: Setting a bit in your CONTROL register
+  modifyreg32(MG_SPI_CONTROL, MG_SPI_MODE, MG_SPI_SLAVE_MODE);
+
+  /* 3. Configure the hardware using your existing master-logic functions */
+  modifyreg32(MG_SPI_CONTROL,
+              0,
+              MG_SPI_MISO_OUTEN_MASK);
+
+  modifyreg32(MG_SPI_CONTROL, MG_SPI_SCLK_OUTEN_MASK | MG_SPI_NCS_OUTEN_MASK | MG_SPI_MOSI_OUTEN_MASK, 0);
+
+  mg_spi_setmode((struct spi_dev_s *)priv, (enum spi_mode_e)mode);
+  mg_spi_setbits((struct spi_dev_s *)priv, nbits);
+
+  /* 4. Let the upper half know the Slave is now selected/ready */
+  SPIS_DEV_SELECT(sdev, true);
+}
 
 
-// static int mg_spi_slave_enqueue(FAR struct spi_slave_ctrlr_s *ctrlr,
-//                                 FAR const void *data, size_t nwords)
-// {
+static int mg_spi_slave_enqueue(FAR struct spi_slave_ctrlr_s *ctrlr,
+                                FAR const void *data, size_t nwords)
+{
 
-//   struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)ctrlr;
+  struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)ctrlr;
 
-//   // printf(" nwords %d",nwords);
-//   uint8_t comm_mode = 0; // tx
-//   modifyreg32(MG_SPI_CONTROL, MG_SPI_COMM_MODE_MASK, (uint32_t)comm_mode << MG_SPI_COMM_MODE_SHIFT);
+  // printf(" nwords %d",nwords);
+  uint8_t comm_mode = 0; // tx
+  modifyreg32(MG_SPI_CONTROL, MG_SPI_COMM_MODE_MASK, (uint32_t)comm_mode << MG_SPI_COMM_MODE_SHIFT);
 
-//   size_t i;
+  size_t i;
 
-//   switch (priv->nbits)
-//   {
+  switch (priv->nbits)
+  {
 
-//   case 8:
-//     const uint8_t *tx_8 = (const uint8_t *)data;
-//     for (i = 0; i < nwords; i++)
-//     {
-//       while (getreg32(MG_SPI_FIFO_STAT) & MG_SPI_TX_FIFO_FULL)
-//         ;
-//       putreg8(tx_8[i], MG_SPI_TX);
-//     }
-//     break;
+  case 8:
+    const uint8_t *tx_8 = (const uint8_t *)data;
+    for (i = 0; i < nwords; i++)
+    {
+      while (getreg32(MG_SPI_FIFO_STAT) & MG_SPI_TX_FIFO_FULL)
+        ;
+      putreg8(tx_8[i], MG_SPI_TX);
+    }
+    break;
 
-//   case 16:
-//     uint16_t *tx_16 = (uint16_t *)data;
-//     for (i = 0; i < nwords; i++)
-//     {
+  case 16:
+    uint16_t *tx_16 = (uint16_t *)data;
+    for (i = 0; i < nwords; i++)
+    {
 
-//       while (!(getreg32(MG_SPI_FIFO_STAT) & MG_SPI_TX_FIFO_30) && ((getreg16(MG_SPI_COMM_STAT) & MG_SPI_COMM_STATUS_TX_DEPTH_MASK) >> 3 == MG_SPI_RX_DEPTH_30_31))
-//         ;
-//       putreg16(tx_16[i], MG_SPI_TX);
-//     }
-//     break;
+      while (!(getreg32(MG_SPI_FIFO_STAT) & MG_SPI_TX_FIFO_30) && ((getreg16(MG_SPI_COMM_STAT) & MG_SPI_COMM_STATUS_TX_DEPTH_MASK) >> 3 == MG_SPI_RX_DEPTH_30_31))
+        ;
+      putreg16(tx_16[i], MG_SPI_TX);
+    }
+    break;
 
-//   case 32:
-//     const uint32_t *tx_32 = (const uint32_t *)data;
-//     for (i = 0; i < nwords; i++)
-//     {
-//       while (!(getreg32(MG_SPI_FIFO_STAT) & MG_SPI_TX_FIFO_28) &&
-//              (((getreg16(MG_SPI_COMM_STAT) & MG_SPI_COMM_STATUS_TX_DEPTH_MASK) >> 3 == MG_SPI_RX_DEPTH_30_31) || ((getreg16(MG_SPI_COMM_STAT) & MG_SPI_COMM_STATUS_TX_DEPTH_MASK) >> 3 == MG_SPI_RX_DEPTH_28_29)))
-//         ;
-//       putreg32(tx_32[i], MG_SPI_TX);
-//     }
-//     break;
-//   }
-//   return (int)i;
+  case 32:
+    const uint32_t *tx_32 = (const uint32_t *)data;
+    for (i = 0; i < nwords; i++)
+    {
+      while (!(getreg32(MG_SPI_FIFO_STAT) & MG_SPI_TX_FIFO_28) &&
+             (((getreg16(MG_SPI_COMM_STAT) & MG_SPI_COMM_STATUS_TX_DEPTH_MASK) >> 3 == MG_SPI_RX_DEPTH_30_31) || ((getreg16(MG_SPI_COMM_STAT) & MG_SPI_COMM_STATUS_TX_DEPTH_MASK) >> 3 == MG_SPI_RX_DEPTH_28_29)))
+        ;
+      putreg32(tx_32[i], MG_SPI_TX);
+    }
+    break;
+  }
+  return (int)i;
 
-// }
+}
 
-// static bool mg_spi_slave_qfull(FAR struct spi_slave_ctrlr_s *ctrlr)
-// {
-//   struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)ctrlr;
+static bool mg_spi_slave_qfull(FAR struct spi_slave_ctrlr_s *ctrlr)
+{
+  struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)ctrlr;
 
-//   /* Check the hardware FIFO status register */
-//   uint32_t status = getreg32( MG_SPI_FIFO_STAT);
+  /* Check the hardware FIFO status register */
+  uint32_t status = getreg32( MG_SPI_FIFO_STAT);
 
-//   /* Return true if the FULL bit is set, false otherwise */
-//   if (status & MG_SPI_TX_FIFO_FULL)
-//     {
-//       return true;
-//     }
+  /* Return true if the FULL bit is set, false otherwise */
+  if (status & MG_SPI_TX_FIFO_FULL)
+    {
+      return true;
+    }
 
-//   return false;
-// }
-// static void mg_spi_slave_qflush(FAR struct spi_slave_ctrlr_s *ctrlr)
-// {
-//   switch (priv->nbits)
-//     {
-//     case 8:
-//       printf("inside");
-//       uint8_t *rx_8 = (const uint8_t *)rxbuffer;
-//       for (i = 0; i < nwords; i++)
-//       {
-//         while (getreg32(MG_SPI_FIFO_STAT) & MG_SPI_RX_FIFO_EMPTY)
-//           ;
-//         rx_8[i] = getreg8(MG_SPI_RX);
-//       }
-//       break;
+  return false;
+}
+static void mg_spi_slave_qflush(FAR struct spi_slave_ctrlr_s *ctrlr)
+{
+    FAR struct mg_spi_priv_s *priv =
+    (FAR struct mg_spi_priv_s *)ctrlr;
 
-//     case 16:
-//       uint16_t *rx_16 = (const uint16_t *)rxbuffer;
-//       for (i = 0; i < nwords; i++)
-//       {
-//         while (((getreg16(MG_SPI_COMM_STAT) & MG_SPI_COMM_STATUS_RX_DEPTH_MASK) >> 6) < MG_SPI_RX_DEPTH_2_3)
-//           ;
-//         rx_16[i] = getreg16(MG_SPI_RX);
-//       }
-//       break;
+  switch (priv->nbits)
+    {
+    case 8:
+      printf("inside");
+      uint8_t *rx_8 = (const uint8_t *)priv->rxbuffer;
+      for (int i = 0; i < (priv->nwords); i++)
+      {
+        while (getreg32(MG_SPI_FIFO_STAT) & MG_SPI_RX_FIFO_EMPTY)
+          ;
+        rx_8[i] = getreg8(MG_SPI_RX);
+      }
+      break;
 
-//     case 32:
-//       uint32_t *rx_32 = (const uint32_t *)rxbuffer;
-//       for (i = 0; i < nwords; i++)
-//       {
-//         while (((getreg16(MG_SPI_COMM_STAT) & MG_SPI_COMM_STATUS_RX_DEPTH_MASK) >> 6) < MG_SPI_RX_DEPTH_4_7)
-//           ;
-//         rx_32[i] = getreg32(MG_SPI_RX);
-//       }
-//       break;
-//     }
-//   return 0;
-// }
+    case 16:
+      uint16_t *rx_16 = (const uint16_t *)priv->rxbuffer;
+      for (int i = 0; i < priv->nwords; i++)
+      {
+        while (((getreg16(MG_SPI_COMM_STAT) & MG_SPI_COMM_STATUS_RX_DEPTH_MASK) >> 6) < MG_SPI_RX_DEPTH_2_3)
+          ;
+        rx_16[i] = getreg16(MG_SPI_RX);
+      }
+      break;
+
+    case 32:
+      uint32_t *rx_32 = (const uint32_t *)priv->rxbuffer;
+      for (int i = 0; i < priv->nwords; i++)
+      {
+        while (((getreg16(MG_SPI_COMM_STAT) & MG_SPI_COMM_STATUS_RX_DEPTH_MASK) >> 6) < MG_SPI_RX_DEPTH_4_7)
+          ;
+        rx_32[i] = getreg32(MG_SPI_RX);
+      }
+      break;
+    }
+
+}
 
  
 static int mg_spi_hwfeatures(FAR struct spi_dev_s *dev, spi_hwfeatures_t features)
@@ -381,6 +420,33 @@ putreg8(regval, MG_SPI_NCS_CTRL);
 
 //   return OK;
 // }
+static void mg_spi_hwinit_slave(struct mg_spi_priv_s *priv)
+{
+  /* Enable SLAVE mode */
+  printf("inside hwinit\n\r");
+  modifyreg32(MG_SPI_CONTROL,
+              MG_SPI_MASTER_MODE,
+              MG_SPI_SLAVE_MODE);
+
+  /* Configure pin directions */
+
+  /* SCLK = input */
+  modifyreg32(MG_SPI_CONTROL, MG_SPI_SCLK_OUTEN_MASK, 0);
+
+  /* NCS = input */
+  modifyreg32(MG_SPI_CONTROL, MG_SPI_NCS_OUTEN_MASK, 0);
+
+  /* MOSI = input */
+  modifyreg32(MG_SPI_CONTROL, MG_SPI_MOSI_OUTEN_MASK, 0);
+
+  /* MISO = output */
+  modifyreg32(MG_SPI_CONTROL,
+              0,
+              MG_SPI_MISO_OUTEN_MASK);
+
+  priv->is_slave = true;
+}
+
 static void mg_spi_hwinit(struct mg_spi_priv_s *priv)
 {
 
@@ -431,6 +497,33 @@ struct spi_dev_s *mg_spibus_initialize(int bus)
   priv->enabled = true;
 
   return &priv->spi;
+}
+
+struct spi_slave_ctrlr_s *mg_spislave_initialize(int bus)
+{
+  struct mg_spi_priv_s *priv = NULL;
+
+  switch (bus)
+  {
+    case 0: priv = &g_mg_spi0_priv; break;
+    case 1: priv = &g_mg_spi1_priv; break;
+    case 2: priv = &g_mg_spi2_priv; break;
+    case 3: priv = &g_mg_spi3_priv; break;
+    default: return NULL;
+  }
+
+  /* Initialize hardware if not already */
+
+      mg_spi_hwinit_slave(priv);
+     
+
+  /* Configure slave mode */
+  priv->is_slave = true;
+
+  /* Assign slave ops */
+  priv->slave_ctrlr.ops = &g_mg_spi_slave_ops;
+
+  return &priv->slave_ctrlr;
 }
 
 static int mg_spi_lock(FAR struct spi_dev_s *dev, bool lock)

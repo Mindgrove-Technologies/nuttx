@@ -367,9 +367,7 @@ static uint32_t up_serialin(struct up_dev_s *priv, int offset)
 
 static void up_serialout(struct up_dev_s *priv, int offset, uint32_t value)
 {
-    if (priv->uartbase==0x11400){
-    printf("setup\n\r");
-  }
+   
   putreg8(value, priv->uartbase + offset);
 }
 
@@ -431,7 +429,7 @@ static int up_setup(struct uart_dev_s *dev)
   // unsigned int baud_count = 50000000 / (16 * CONFIG_UART0_BAUD);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
    
-   uint32_t baud_count = 19;//(SYSTEM_CLK / (16 * priv->baud));
+   uint32_t baud_count = 16;//(SYSTEM_CLK / (16 * priv->baud));
   up_serialout(priv,UART_BAUD_OFFSET,baud_count);
     up_serialout(priv,UART_CTRL_OFFSET,0x0000);
 
@@ -475,10 +473,7 @@ static int up_attach(struct uart_dev_s *dev)
 {
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
   int ret;
-if (priv->uartbase==0x11400){
 
-    printf("attach\n\r");
-  }
   /* Initialize interrupt generation on the peripheral */
 
   // putreg16((ENABLE_RX_NOT_EMPTY | ENABLE_RX_FULL | ENABLE_TX_EMPTY), priv->uartbase + UART_EV_ENABLE_OFFSET);
@@ -486,7 +481,7 @@ if (priv->uartbase==0x11400){
   up_serialout(priv, UART_EV_ENABLE_OFFSET,ENABLE_RX_NOT_EMPTY | ENABLE_RX_FULL | ENABLE_TX_EMPTY);
 
   ret = irq_attach(priv->irq, up_interrupt, dev);
-    printf("irq_num%d\n\r",priv->irq);
+   
 
   if (ret == OK)
     {
@@ -513,9 +508,6 @@ if (priv->uartbase==0x11400){
 static void up_detach(struct uart_dev_s *dev)
 {
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
-  if (priv->uartbase==0x11400){
-    printf("detach\n\r");
-  }
 
   /* Disable interrupts */
 
@@ -549,10 +541,6 @@ static int up_interrupt(int irq, void *context, void *arg)
 
   DEBUGASSERT(dev != NULL && dev->priv != NULL);
   priv = (struct up_dev_s *)dev->priv;
-  //  printf("up_interrupt%d\n\r",priv->uartbase);
-if (priv->uartbase==0x11400){
-    printf("up_interrupt\n\r");
-  }
 
   /* Loop until there are no characters to be t(ransferred or,
    * until we have been looping for a long time.
@@ -627,15 +615,11 @@ static int up_receive(struct uart_dev_s *dev, unsigned int *status)
 
   while((status1 & STS_RX_NOT_EMPTY) == 0){
     status1 =  getreg16(priv->uartbase+UART_STATUS_OFFSET);
-   printf("status_rec%d\n\r,",status1);
   }
   rxdata = getreg8(priv->uartbase+UART_RX_OFFSET);
-  // printf("%d",priv->uartbase);
   
-  if (priv->uartbase==0x11400){
-    printf("rxdata%d\n\r",rxdata);
-  }
-
+  
+  
   return rxdata;
 }
 
@@ -673,8 +657,7 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
 
   if (enable)
     {
-      if (priv->uartbase==0x11400){
-      printf("enable%d\n\r",enable );}
+     
 #ifndef CONFIG_SUPPRESS_SERIAL_INTS
     // priv->im |= ENABLE_RX_FULL;
     // priv->im |= ENABLE_RX_NOT_EMPTY;
@@ -691,10 +674,7 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
     }
 
     putreg16(priv->im , priv->uartbase + UART_EV_ENABLE_OFFSET);
-    if (priv->uartbase==0x11400){
-  printf("rx_int_hello %d\n\r",priv->im);
-   
-  }
+    
     // unsigned short *int_reg = (unsigned short*)0x11318;
     // printf("int reg=%x!\n\r",*int_reg);
   // up_serialout(priv, UART_EV_ENABLE_OFFSET, priv->im);
@@ -717,9 +697,6 @@ static bool up_rxavailable(struct uart_dev_s *dev)
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
   uint8_t status = getreg16(priv->uartbase+UART_STATUS_OFFSET);
   
-  if (priv->uartbase==0x11400){
-    printf("status_rx_avail%d\n\r",status);
-  }
   /* Return true is data is available in the receive data buffer */
   return status & STS_RX_NOT_EMPTY;
 }

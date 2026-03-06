@@ -34,10 +34,11 @@
    /* Clear .bss.  We'll do this inline (vs. calling memset) just to be
     * certain that there are no issues with the state of global variables.
     */
- 
+
    for (dest = (uint32_t *)_sbss; dest < (uint32_t *)_ebss; )
      {
        *dest++ = 0;
+     
      }
  
    /* Move the initialized data section from his temporary holding spot in
