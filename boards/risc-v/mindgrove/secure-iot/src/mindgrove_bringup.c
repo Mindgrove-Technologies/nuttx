@@ -34,7 +34,6 @@
 #include <nuttx/input/buttons.h>
 #include "mindgrove_spi.h"
 #include "mindgrove_i2c.h"
-
 #include <nuttx/spi/spi_transfer.h>
 #include <nuttx/i2c/i2c_master.h>
 
@@ -152,72 +151,72 @@ int mindgrove_bringup(void)
 // #endif
 // #endif
 
-struct spi_dev_s *spi;
-  int ret;
+// struct spi_dev_s *spi;
+//   int ret;
 
-#if defined(CONFIG_MINDGROVE_SPI0)
-#ifdef CONFIG_SPI_MASTER
-  spi = mg_spibus_initialize(0);
-  if (spi != NULL)
-    {
-#ifdef CONFIG_SPI_DRIVER
-      ret = spi_register(spi, 0); /* Creates /dev/spi0 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI0: %d\n", ret);
-#endif
-    }
-    #endif
-#endif
+// #if defined(CONFIG_MINDGROVE_SPI0)
+// #ifdef CONFIG_SPI_MASTER
+//   spi = mg_spibus_initialize(0);
+//   if (spi != NULL)
+//     {
+// #ifdef CONFIG_SPI_DRIVER
+//       ret = spi_register(spi, 0); /* Creates /dev/spi0 */
+//       if (ret < 0) _alert("ERROR: Failed to register SPI0: %d\n", ret);
+// #endif
+//     }
+//     #endif
+// #endif
 
-#if defined(CONFIG_MINDGROVE_SPI1)
-  spi = mg_spibus_initialize(1);
-  if (spi != NULL)
-    {
-#ifdef CONFIG_SPI_DRIVER
-      ret = spi_register(spi, 1); /* Creates /dev/spi1 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI1: %d\n", ret);
-#endif
-    }
-#endif
+// #if defined(CONFIG_MINDGROVE_SPI1)
+//   spi = mg_spibus_initialize(1);
+//   if (spi != NULL)
+//     {
+// #ifdef CONFIG_SPI_DRIVER
+//       ret = spi_register(spi, 1); /* Creates /dev/spi1 */
+//       if (ret < 0) _alert("ERROR: Failed to register SPI1: %d\n", ret);
+// #endif
+//     }
+// #endif
 
-#if defined(CONFIG_MINDGROVE_SPI2)
+// #if defined(CONFIG_MINDGROVE_SPI2)
 
-  spi = mg_spibus_initialize(2);
-  if (spi != NULL)
-    {
-#ifdef CONFIG_SPI_DRIVER
-      ret = spi_register(spi, 2); /* Creates /dev/spi2 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI2: %d\n", ret);
-#endif
-    }
-#endif
+//   spi = mg_spibus_initialize(2);
+//   if (spi != NULL)
+//     {
+// #ifdef CONFIG_SPI_DRIVER
+//       ret = spi_register(spi, 2); /* Creates /dev/spi2 */
+//       if (ret < 0) _alert("ERROR: Failed to register SPI2: %d\n", ret);
+// #endif
+//     }
+// #endif
 
-#if defined(CONFIG_MINDGROVE_SPI3)
-  spi = mg_spibus_initialize(3);
-  if (spi != NULL)
-    {
-#ifdef CONFIG_SPI_DRIVER
-      ret = spi_register(spi, 3); /* Creates /dev/spi3 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI3: %d\n", ret);
-#endif
-    }
-#endif
+// #if defined(CONFIG_MINDGROVE_SPI3)
+//   spi = mg_spibus_initialize(3);
+//   if (spi != NULL)
+//     {
+// #ifdef CONFIG_SPI_DRIVER
+//       ret = spi_register(spi, 3); /* Creates /dev/spi3 */
+//       if (ret < 0) _alert("ERROR: Failed to register SPI3: %d\n", ret);
+// #endif
+//     }
+// #endif
 
-#ifdef CONFIG_SPI_SLAVE
-  /* Register SPI Slave character driver(s) */
+// #ifdef CONFIG_SPI_SLAVE
+//   /* Register SPI Slave character driver(s) */
 
-#if defined(CONFIG_MINDGROVE_SPI0)
-printf("inside");
-  struct spi_slave_ctrlr_s *slv_ctrlr0;
-  slv_ctrlr0 = mg_spislave_initialize(0);
-  if (slv_ctrlr0 != NULL)
-    {
-      ret = spi_slave_register(slv_ctrlr0, 0); /* Creates /dev/spislv0 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI Slave 0: %d\n", ret);
-    }
+// #if defined(CONFIG_MINDGROVE_SPI0)
+// printf("inside");
+//   struct spi_slave_ctrlr_s *slv_ctrlr0;
+//   slv_ctrlr0 = mg_spislave_initialize(0);
+//   if (slv_ctrlr0 != NULL)
+//     {
+//       ret = spi_slave_register(slv_ctrlr0, 0); /* Creates /dev/spislv0 */
+//       if (ret < 0) _alert("ERROR: Failed to register SPI Slave 0: %d\n", ret);
+//     }
 
-#endif
-#endif
-
+// #endif
+// #endif
+int ret;
 #ifdef CONFIG_I2C
 #if defined(CONFIG_MINDGROVE_I2C0)
 
