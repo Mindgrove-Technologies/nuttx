@@ -27,7 +27,7 @@
 MEMORY
 {
  progmem (rx) : ORIGIN = 0x90000000, LENGTH = 2M
- sram (rwx) : ORIGIN = 0x90200000, LENGTH = 1M
+  sram (rwx) : ORIGIN = 0x90200000, LENGTH = 1M
 }
 
 OUTPUT_ARCH("riscv")

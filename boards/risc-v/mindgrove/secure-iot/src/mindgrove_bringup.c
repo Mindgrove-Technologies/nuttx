@@ -36,7 +36,8 @@
 #include "mindgrove_i2c.h"
 #include <nuttx/spi/spi_transfer.h>
 #include <nuttx/i2c/i2c_master.h>
-
+#include <nuttx/timers/pwm.h>
+#include "mindgrove_pwm.h" 
 #include "secure-iot.h"
 #include <nuttx/spi/spi.h>
 #include <nuttx/spi/slave.h>
@@ -216,24 +217,24 @@ int mindgrove_bringup(void)
 
 // #endif
 // #endif
-int ret;
-#ifdef CONFIG_I2C
-#if defined(CONFIG_MINDGROVE_I2C0)
+// int ret;
+// #ifdef CONFIG_I2C
+// #if defined(CONFIG_MINDGROVE_I2C0)
 
-  FAR struct i2c_master_s *i2c0;
+//   FAR struct i2c_master_s *i2c0;
 
-  i2c0 = mg_i2c_initialize(0);
-  if (i2c0 != NULL)
-    {
-      ret = i2c_register(i2c0, 0);   /* Creates /dev/i2c0 */
-      if (ret < 0)
-        {
-          _alert("ERROR: Failed to register I2C0: %d\n", ret);
-        }
-    }
+//   i2c0 = mg_i2c_initialize(0);
+//   if (i2c0 != NULL)
+//     {
+//       ret = i2c_register(i2c0, 0);   /* Creates /dev/i2c0 */
+//       if (ret < 0)
+//         {
+//           _alert("ERROR: Failed to register I2C0: %d\n", ret);
+//         }
+//     }
 
-#endif
-#endif
+// #endif
+// #endif
 
 //   /* Register the DAC driver at "/dev/dac0" */
 
@@ -244,6 +245,48 @@ int ret;
 //       return ret;
 //     }
 
+
+// #if defined(CONFIG_MINDGROVE_PWM0)
+//   FAR struct pwm_lowerhalf_s *pwm0;
+//   printf("inside register ");
+//   pwm0 = mg_pwm_initialize(0);        /* Your board-specific PWM init */
+//   if (pwm0 != NULL)
+//     {
+//       ret = pwm_register("/dev/pwm0", pwm0);   /* Creates /dev/pwm0 */
+//       if (ret < 0)
+//         {
+//           _alert("ERROR: Failed to register PWM0: %d\n", ret);
+//         }
+//     }
+// #endif
+#if defined(CONFIG_PWM)
+  int ret;
+
+// #if defined(CONFIG_MINDGROVE_PWM0)
+  {
+    printf("inside bringup");
+    FAR struct pwm_lowerhalf_s *pwm0;
+    pwm0 = mg_pwm_initialize(1);
+    if (pwm0 != NULL)
+      {
+        ret = pwm_register("/dev/pwm1", pwm0);
+        if (ret < 0)
+          {
+            printf("ERROR: Failed to register PWM0: %d\n", ret);
+          }
+        else
+          {
+            printf("PWM0 registered at /dev/pwm0\n");
+          }
+      }
+    else
+      {
+        printf("ERROR: mg_pwm_initialize(0) returned NULL\n");
+      }
+  }
+#endif  /* CONFIG_MINDGROVE_PWM0 */
+
+// #endif 
 // #endif
 
 // #if defined(CONFIG_SHAKTI_SPI) && defined(CONFIG_MMCSD) && defined(CONFIG_MMCSD_SPI)
