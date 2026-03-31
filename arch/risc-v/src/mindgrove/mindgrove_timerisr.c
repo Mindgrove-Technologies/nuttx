@@ -42,7 +42,7 @@
  * Pre-processor Definitions
  ****************************************************************************/
 
-#define TICK_COUNT 350// (mindgrove_get_hfclk() / TICK_PER_SEC)
+#define TICK_COUNT 350
 #define MSIP       0x02000000
 
 /****************************************************************************
@@ -120,10 +120,10 @@ static void mindgrove_reload_mtimecmp(void)
     }
 
   next = current + TICK_COUNT;
-  next = -1;
+
   // _alert("current : %llu, next: %llu",current,next);
   mindgrove_clint_time_cmp_write(next);
-  putreg32(1, MSIP);
+
 
   csr_set(mie, MIE_MTIE);
   csr_clear(mip, MIP_MTIP);

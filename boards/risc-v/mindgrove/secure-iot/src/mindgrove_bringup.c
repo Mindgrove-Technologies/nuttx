@@ -259,33 +259,59 @@ int mindgrove_bringup(void)
 //         }
 //     }
 // #endif
+// #if defined(CONFIG_PWM)
+//   int ret;
+
+// // #if defined(CONFIG_MINDGROVE_PWM0)
+//   {
+//     printf("inside bringup");
+//     FAR struct pwm_lowerhalf_s *pwm0;
+//     pwm0 = mg_pwm_initialize(1);
+//     if (pwm0 != NULL)
+//       {
+//         ret = pwm_register("/dev/pwm1", pwm0);
+//         if (ret < 0)
+//           {
+//             printf("ERROR: Failed to register PWM0: %d\n", ret);
+//           }
+//         else
+//           {
+//             printf("PWM0 registered at /dev/pwm0\n");
+//           }
+//       }
+//     else
+//       {
+//         printf("ERROR: mg_pwm_initialize(0) returned NULL\n");
+//       }
+//   }
+// #endif  /* CONFIG_MINDGROVE_PWM0 */
+
 #if defined(CONFIG_PWM)
   int ret;
+  FAR struct pwm_lowerhalf_s *pwm;
+  char devpath[16];
 
-// #if defined(CONFIG_MINDGROVE_PWM0)
-  {
-    printf("inside bringup");
-    FAR struct pwm_lowerhalf_s *pwm0;
-    pwm0 = mg_pwm_initialize(1);
-    if (pwm0 != NULL)
-      {
-        ret = pwm_register("/dev/pwm1", pwm0);
-        if (ret < 0)
-          {
-            printf("ERROR: Failed to register PWM0: %d\n", ret);
-          }
-        else
-          {
-            printf("PWM0 registered at /dev/pwm0\n");
-          }
-      }
-    else
-      {
-        printf("ERROR: mg_pwm_initialize(0) returned NULL\n");
-      }
-  }
-#endif  /* CONFIG_MINDGROVE_PWM0 */
+  for (int i = 0; i < 14; i++)  /* PWM_MAX_COUNT = 14 */
+    {
+      pwm = mg_pwm_initialize(i);
+      if (pwm == NULL)
+        {
+          printf("ERROR: mg_pwm_initialize(%d) returned NULL\n", i);
+          continue;
+        }
 
+      snprintf(devpath, sizeof(devpath), "/dev/pwm%d", i);
+      ret = pwm_register(devpath, pwm);
+      if (ret < 0)
+        {
+          printf("ERROR: Failed to register %s: %d\n", devpath, ret);
+        }
+      else
+        {
+          printf("Registered %s successfully\n", devpath);
+        }
+    }
+#endif
 // #endif 
 // #endif
 
