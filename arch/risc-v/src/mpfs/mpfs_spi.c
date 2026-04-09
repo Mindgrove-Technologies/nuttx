@@ -204,18 +204,7 @@ static const struct spi_ops_s mpfs_spi0_ops =
 #endif
     .setmode          = mpfs_spi_setmode,
     .setbits          = mpfs_spi_setbits,
-#ifdef CONFIG_SPI_HWFvoid modifyreg32(uintreg_t addr, uint32_t clearbits, uint32_t setbits)
-{
-  irqstate_t flags;
-  uint32_t   regval;
-
-  flags   = spin_lock_irqsave(&g_modifyreg_lock);
-  regval  = getreg32(addr);
-  regval &= ~clearbits;
-  regval |= setbits;
-  putreg32(regval, addr);
-  spin_unlock_irqrestore(&g_modifyreg_lock, flags);
-}EATURES
+#ifdef CONFIG_SPI_HWFvoid 
     .hwfeatures       = mpfs_spi_hwfeatures,
 #endif
     .status           = mpfs_spi_status,

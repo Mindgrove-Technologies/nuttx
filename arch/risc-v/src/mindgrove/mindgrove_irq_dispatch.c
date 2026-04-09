@@ -133,8 +133,6 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
 
   if (RISCV_IRQ_MEXT == irq)
     {
-      
-      // printf("INTERRUPT_Claim_Request%d\n\r",intr);
       irq = INTERRUPT_Claim_Request()+MINDGROVE_PLIC_START;
     }
 

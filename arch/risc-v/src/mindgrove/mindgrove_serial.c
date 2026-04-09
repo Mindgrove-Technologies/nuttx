@@ -66,27 +66,6 @@
  * be ttyS0.  If there is no console then will use the lowest numbered UART.
  */
 
-// #ifdef HAVE_SERIAL_CONSOLE
-// #  if defined(CONFIG_UART0_SERIAL_CONSOLE)
-// #    define CONSOLE_DEV     g_uart0port     /* UART0 is console */
-// #    define TTYS0_DEV       g_uart0port     /* UART0 is ttyS0 */
-// #    undef  TTYS1_DEV                       /* No ttyS1 */
-// #    define SERIAL_CONSOLE  1
-// #  else
-// #    error "I'm confused... Do we have a serial console or not?"
-// #  endif
-// #else
-// #  undef  CONSOLE_DEV                        /* No console */
-// #  undef  CONFIG_UART0_SERIAL_CONSOLE
-// #  if defined(CONFIG_MINDGROVE_UART0)
-// #    define TTYS0_DEV       g_uart0port     /* UART0 is ttyS0 */
-// #    undef  TTYS1_DEV                       /* No ttyS1 */
-// #    define SERIAL_CONSOLE  1
-// #  else
-// #    undef  TTYS0_DEV
-// #    undef  TTYS1_DEV
-// #  endif
-// #endif
 
 
 #ifdef HAVE_SERIAL_CONSOLE
@@ -429,9 +408,9 @@ static int up_setup(struct uart_dev_s *dev)
   // unsigned int baud_count = 50000000 / (16 * CONFIG_UART0_BAUD);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
    
-   uint32_t baud_count = 16;//(SYSTEM_CLK / (16 * priv->baud));
+  uint32_t baud_count = 16;//(SYSTEM_CLK / (16 * priv->baud));
   up_serialout(priv,UART_BAUD_OFFSET,baud_count);
-    up_serialout(priv,UART_CTRL_OFFSET,0x0000);
+  up_serialout(priv,UART_CTRL_OFFSET,0x0000);
 
   return OK;
 }
@@ -476,9 +455,9 @@ static int up_attach(struct uart_dev_s *dev)
 
   /* Initialize interrupt generation on the peripheral */
 
-  // putreg16((ENABLE_RX_NOT_EMPTY | ENABLE_RX_FULL | ENABLE_TX_EMPTY), priv->uartbase + UART_EV_ENABLE_OFFSET);
+  putreg16((ENABLE_RX_NOT_EMPTY | ENABLE_RX_FULL | ENABLE_TX_EMPTY), priv->uartbase + UART_EV_ENABLE_OFFSET);
   
-  up_serialout(priv, UART_EV_ENABLE_OFFSET,ENABLE_RX_NOT_EMPTY | ENABLE_RX_FULL | ENABLE_TX_EMPTY);
+  // up_serialout(priv, UART_EV_ENABLE_OFFSET,ENABLE_RX_NOT_EMPTY | ENABLE_RX_FULL | ENABLE_TX_EMPTY);
 
   ret = irq_attach(priv->irq, up_interrupt, dev);
    
@@ -605,8 +584,6 @@ static int up_ioctl(struct file *filep, int cmd, unsigned long arg)
 
 static int up_receive(struct uart_dev_s *dev, unsigned int *status)
 {
-  
-
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
   int rxdata;
 
@@ -617,28 +594,8 @@ static int up_receive(struct uart_dev_s *dev, unsigned int *status)
     status1 =  getreg16(priv->uartbase+UART_STATUS_OFFSET);
   }
   rxdata = getreg8(priv->uartbase+UART_RX_OFFSET);
-  
-  
-  
   return rxdata;
 }
-
-// static int up_receive(struct uart_dev_s *dev, unsigned int *status)
-// {
-//     struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
-
-//     /* Read status first */
-//     uint16_t stat = getreg16(priv->uartbase + UART_STATUS_OFFSET);
-//     if (status) {
-//         *status = stat;
-//         printf("status_rec%d\n\r,",stat);
-//     }
-
-//     /* Read the byte */
-//     int ch = getreg8(priv->uartbase+ UART_RX_OFFSET);
- 
-//     return ch;
-// }
 
 /****************************************************************************
  * Name: up_rxint
@@ -678,7 +635,6 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
     // unsigned short *int_reg = (unsigned short*)0x11318;
     // printf("int reg=%x!\n\r",*int_reg);
   // up_serialout(priv, UART_EV_ENABLE_OFFSET, priv->im);
-// printf("hello\n\r");
   leave_critical_section(flags);
 }
 
@@ -851,22 +807,6 @@ void riscv_earlyserialinit(void)
  *
  ****************************************************************************/
 
-// void riscv_serialinit(void)
-// {
-//   /* Register the console */
-
-// #ifdef HAVE_SERIAL_CONSOLE
-//   uart_register("/dev/console", &CONSOLE_DEV);
-// #endif
-
-//   /* Register all UARTs */
-
-//   uart_register("/dev/ttyS0", &TTYS0_DEV);
-  
-// #ifdef TTYS1_DEV
-//   uart_register("/dev/ttyS1", &TTYS1_DEV);
-// #endif
-// }
 void riscv_serialinit(void)
 {
   /* Register the console */
