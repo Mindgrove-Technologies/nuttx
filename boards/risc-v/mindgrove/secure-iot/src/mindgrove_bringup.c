@@ -126,26 +126,6 @@ int mindgrove_bringup(void)
     
 // #endif
 
-
-// #if defined(CONFIG_MINDGROVE_SPI)
-//   struct spi_dev_s *spi0;
-// printf("debug print\n\r");
-//   spi0 = mg_spibus_initialize(0);
-
-//   if (spi0==NULL)
-//     {
-//       _alert("ERROR: SPI0 init failed\n");
-//       return -ENODEV;
-//     }
-// #ifdef CONFIG_SPI_DRIVER
-//   int ret = spi_register(spi0, 0); // This creates /dev/spi0
-//   if (ret < 0)
-//     {
-//       _alert("ERROR: Failed to register /dev/spi0: %d\n", ret);
-//     }
-// #endif
-// #endif
-
 struct spi_dev_s *spi;
   int ret;
 
