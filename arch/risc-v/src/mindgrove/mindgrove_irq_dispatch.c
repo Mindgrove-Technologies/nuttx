@@ -128,8 +128,6 @@ void *riscv_dispatch_irq(uintptr_t vector, uintptr_t *regs)
   int irq = (vector >> (27+32)) | (vector & 0xf);
 
   /* Firstly, check if the irq is machine external interrupt */
-  // printf("PLIC claimed irq=%d\n", irq);
-
 
   if (RISCV_IRQ_MEXT == irq)
     {

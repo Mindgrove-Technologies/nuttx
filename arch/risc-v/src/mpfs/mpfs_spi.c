@@ -204,7 +204,7 @@ static const struct spi_ops_s mpfs_spi0_ops =
 #endif
     .setmode          = mpfs_spi_setmode,
     .setbits          = mpfs_spi_setbits,
-#ifdef CONFIG_SPI_HWFvoid 
+#ifdef CONFIG_SPI_HWFEATURES
     .hwfeatures       = mpfs_spi_hwfeatures,
 #endif
     .status           = mpfs_spi_status,

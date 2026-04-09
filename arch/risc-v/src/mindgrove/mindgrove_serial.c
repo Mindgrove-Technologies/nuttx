@@ -346,7 +346,6 @@ static uint32_t up_serialin(struct up_dev_s *priv, int offset)
 
 static void up_serialout(struct up_dev_s *priv, int offset, uint32_t value)
 {
-   
   putreg8(value, priv->uartbase + offset);
 }
 
@@ -388,7 +387,6 @@ static void up_disableuartint(struct up_dev_s *priv, uint8_t *im)
 
   putreg16(0, priv->uartbase + UART_EV_ENABLE_OFFSET);
   
-
   leave_critical_section(flags);
 }
 
@@ -403,8 +401,6 @@ static void up_disableuartint(struct up_dev_s *priv, uint8_t *im)
 
 static int up_setup(struct uart_dev_s *dev)
 {
-
-
   // unsigned int baud_count = 50000000 / (16 * CONFIG_UART0_BAUD);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
    
@@ -607,14 +603,11 @@ static int up_receive(struct uart_dev_s *dev, unsigned int *status)
 
 static void up_rxint(struct uart_dev_s *dev, bool enable)
 {
-  
-
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
   irqstate_t flags = enter_critical_section();
 
   if (enable)
     {
-     
 #ifndef CONFIG_SUPPRESS_SERIAL_INTS
     // priv->im |= ENABLE_RX_FULL;
     // priv->im |= ENABLE_RX_NOT_EMPTY;
@@ -629,7 +622,6 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
       priv->im &= ~ENABLE_RX_NOT_EMPTY;
 
     }
-
     putreg16(priv->im , priv->uartbase + UART_EV_ENABLE_OFFSET);
     
     // unsigned short *int_reg = (unsigned short*)0x11318;
@@ -648,11 +640,8 @@ static void up_rxint(struct uart_dev_s *dev, bool enable)
 
 static bool up_rxavailable(struct uart_dev_s *dev)
 {
- 
-
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
   uint8_t status = getreg16(priv->uartbase+UART_STATUS_OFFSET);
-  
   /* Return true is data is available in the receive data buffer */
   return status & STS_RX_NOT_EMPTY;
 }
@@ -791,10 +780,6 @@ void riscv_earlyserialinit(void)
   CONSOLE_DEV.isconsole = true;
   up_setup(&CONSOLE_DEV);
 #endif
-
-// #ifdef TTYS1_DEV
-//   up_setup(&TTYS1_DEV);
-// #endif
 }
 #endif
 
