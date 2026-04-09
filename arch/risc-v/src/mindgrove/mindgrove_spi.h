@@ -124,7 +124,6 @@
 #include <nuttx/spi/spi.h>
 
 struct spi_dev_s *mg_spibus_initialize(int bus);
-struct spi_slave_ctrlr_s *mg_spislave_initialize(int bus);
 
 #endif
 
