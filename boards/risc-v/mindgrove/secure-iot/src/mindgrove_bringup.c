@@ -101,6 +101,25 @@ int mindgrove_bringup(void)
     
 // #endif 
 
+int ret;
+#ifdef CONFIG_I2C
+#if defined(CONFIG_MINDGROVE_I2C0)
+
+  FAR struct i2c_master_s *i2c0;
+
+  i2c0 = mg_i2c_initialize(0);
+  if (i2c0 != NULL)
+    {
+      ret = i2c_register(i2c0, 0);   /* Creates /dev/i2c0 */
+      if (ret < 0)
+        {
+          _alert("ERROR: Failed to register I2C0: %d\n", ret);
+        }
+    }
+
+#endif
+#endif
+
 // #if defined(CONFIG_SHAKTI_I2C) && defined(CONFIG_LM75_I2C)
   
   
