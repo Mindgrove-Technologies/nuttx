@@ -10,17 +10,4 @@
 # # These "hidden" settings determine whether a peripheral option is available
 # # for the selected MCU
 
-config MINDGROVE_HAVE_UART0
-	bool
-	default y
-	select UART0_SERIALDRIVER
-	select ARCH_HAVE_SERIAL_TERMIOS
-
-config MINDGROVE_UART0
-	bool "UART0"
-	default y
-	select ARCH_HAVE_UART0
-	select ARCH_HAVE_SERIAL_TERMIOS
-	select MINDGROVE_UART
-
 # endmenu
