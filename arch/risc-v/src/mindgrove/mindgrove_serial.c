@@ -404,7 +404,7 @@ static int up_setup(struct uart_dev_s *dev)
   // unsigned int baud_count = 50000000 / (16 * CONFIG_UART0_BAUD);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
    
-  uint32_t baud_count = 16;//(SYSTEM_CLK / (16 * priv->baud));
+  uint32_t baud_count = 19;//(SYSTEM_CLK / (16 * priv->baud));
   up_serialout(priv,UART_BAUD_OFFSET,baud_count);
   up_serialout(priv,UART_CTRL_OFFSET,0x0000);
 
@@ -780,6 +780,8 @@ void riscv_earlyserialinit(void)
   CONSOLE_DEV.isconsole = true;
   up_setup(&CONSOLE_DEV);
 #endif
+
+
 }
 #endif
 

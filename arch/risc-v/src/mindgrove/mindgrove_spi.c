@@ -310,22 +310,17 @@ static int mg_spi_hwfeatures(FAR struct spi_dev_s *dev, spi_hwfeatures_t feature
   FAR struct mg_spi_priv_s *priv = (FAR struct mg_spi_priv_s *)dev;
   uint8_t regval;
 
-  /* Read the current state of the NCS Control Register */
+  /* Read the current state of the f Control Register */
   regval = getreg8(MG_SPI_NCS_CTRL);
 
   /* Bit 2 (FORCE_ACTIVE) is the standard NuttX way to request Manual CS control */
   if (features & HWFEAT_FORCE_CS_ACTIVE_AFTER_TRANSFER)
     {
-  
       regval |= (1 << 0);
-    
     }
   else
     {
-     
       regval &= ~(1 << 0);
-      
-      printf("SPI: Hardware NCS Control Enabled\n");
     }
 
   /* Write the final value back to the register */
@@ -352,35 +347,8 @@ static void mg_spi_select(struct spi_dev_s *dev, uint32_t devid, bool selected)
 
 putreg8(regval, MG_SPI_NCS_CTRL);
   
-  // Debug: Use %d for bool and show the final hex regval
-  printf("SPI Select: %s | Reg: 0x%02x\n", selected ? "LOW" : "HIGH", regval);
 }
-// static int mg_spi_hwfeatures(FAR struct spi_dev_s *dev, spi_hwfeatures_t features)
-// {
-//   FAR struct mg_spi_priv_s *priv = (FAR struct mg_spi_priv_s *)dev;
-//   uint8_t regval = 0;
 
-//   /* 1. Check if user wants Software NCS Control */
-//   if (features & SPI_HWFEAT_CSKEEP)
-//     {
-//       /* Set NCS_SELECT (Bit 0) to 1 for Software Mode */
-//       regval |= (1 << 0);
-      
-//       /* You can also set the initial state of NCS_SW (Bit 1) 
-//        * Usually, we start with it High (Deselected = 1) */
-//       regval |= (1 << 1);
-//     }
-//   else
-//     {
-//       /* Hardware NCS mode (Bit 0 = 0) */
-//       regval &= ~(1 << 0);
-//     }
-
-//   /* 2. Write to the 8-bit NCS_CTRL register */
-//   putreg8(regval, priv->hw_base + MG_SPI_NCS_CTRL_OFFSET);
-
-//   return OK;
-// }
 static void mg_spi_hwinit(struct mg_spi_priv_s *priv)
 {
 
@@ -599,7 +567,7 @@ static void mg_spi_exchange(struct spi_dev_s *dev, const void *txbuffer,
     switch (priv->nbits)
     {
     case 8:
-      printf("inside");
+
       uint8_t *rx_8 = (const uint8_t *)rxbuffer;
       for (i = 0; i < nwords; i++)
       {
@@ -670,7 +638,6 @@ static void mg_spi_exchange(struct spi_dev_s *dev, const void *txbuffer,
       break;
 
     case 32:
-      printf("caseok");
       const uint32_t *tx_f_32 = (const uint32_t *)txbuffer;
       uint32_t *rx_f_32 = (const uint32_t *)rxbuffer;
       for (i = 0; i < nwords; i++)
@@ -711,17 +678,3 @@ static uint32_t mg_spi_send(struct spi_dev_s *dev, uint32_t wd)
 
   return tx;
 }
-// static const struct spi_ops_s g_mg_spi_ops =
-// {
-//   .lock       = mg_spi_lock,
-//   .setfrequency = mg_spi_setfrequency,
-//   .setmode    = mg_spi_setmode,
-//   .setbits    = mg_spi_setbits,
-//   .status     = mg_spi_status,
-// #ifdef CONFIG_SPI_EXCHANGE
-//   .exchange   = mg_spi_exchange,
-// #else
-//   .sndblock   = mg_spi_send,
-//   .recvblock  = mg_spi_recv,
-// #endif
-// };
