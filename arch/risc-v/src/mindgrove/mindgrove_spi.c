@@ -21,26 +21,6 @@
 #define MG_SPI2_BASE 0x20200u
 #define MG_SPI3_BASE 0x20300u
 
-// struct mg_spi_priv_s
-// {
-//   struct spi_dev_s spi;     /* MUST be first */
-
-//   uintptr_t        hw_base;    /* SPI base address */
-
-//   bool             enabled;
-
-//   uint32_t         frequency;
-//   uint32_t         actual;
-
-//   enum spi_mode_e  mode;
-//   uint8_t          nbits;
-
-//   uint32_t         devid;   /* CS device ID */
-
-//   mutex_t          lock;    /* SPI bus lock */
-// };
-
-
 #ifdef CONFIG_SPI_HWFEATURES
 typedef uint8_t spi_hwfeatures_t;
 #endif
@@ -69,6 +49,8 @@ struct mg_spi_priv_s
   uint32_t devid; /* CS device ID */
   mutex_t lock;   /* SPI bus lock */
 };
+
+/* SPI slave functionality is commented out since it has not been tested */
 
 // #ifdef CONFIG_SPI_SLAVE
 // static void mg_spi_slave_bind(FAR struct spi_slave_ctrlr_s *ctrlr,

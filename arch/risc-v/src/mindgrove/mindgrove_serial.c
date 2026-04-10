@@ -59,13 +59,13 @@
  * provide some minimal implementation of up_putc.
  */
 
+#define CEIL_DIV_US(x, y) ((volatile uint16_t)(((x) + (y) - 1U) / (y)))
 
 #ifdef USE_SERIALDRIVER
 
 /* Which UART with be tty0/console and which tty1?  The console will always
  * be ttyS0.  If there is no console then will use the lowest numbered UART.
  */
-
 
 
 #ifdef HAVE_SERIAL_CONSOLE
@@ -401,16 +401,15 @@ static void up_disableuartint(struct up_dev_s *priv, uint8_t *im)
 
 static int up_setup(struct uart_dev_s *dev)
 {
-  // unsigned int baud_count = 50000000 / (16 * CONFIG_UART0_BAUD);
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
-   
-  uint32_t baud_count = 19;//(SYSTEM_CLK / (16 * priv->baud));
-  up_serialout(priv,UART_BAUD_OFFSET,baud_count);
-  up_serialout(priv,UART_CTRL_OFFSET,0x0000);
+
+  uint16_t baud_count=CEIL_DIV_US(CLOCK_FREQUENCY_FPGA,16U*(priv->baud));
+
+  up_serialout(priv, UART_BAUD_OFFSET, baud_count);
+  up_serialout(priv, UART_CTRL_OFFSET, 0x0000);
 
   return OK;
 }
-
 /****************************************************************************
  * Name: up_shutdown
  *
