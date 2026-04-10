@@ -36,6 +36,7 @@
 #include <nuttx/spi/spi_transfer.h>
 #include "secure-iot.h"
 #include <nuttx/spi/spi.h>
+#include "mindgrove_i2c.h"
 
 
 
@@ -98,7 +99,7 @@ struct spi_dev_s *spi;
     }
 #endif
 
-#ifdef CONFIG_I2C
+
 #if defined(CONFIG_MINDGROVE_I2C0)
 
   FAR struct i2c_master_s *i2c0;
@@ -114,6 +115,20 @@ struct spi_dev_s *spi;
     }
 
 #endif
+#if defined(CONFIG_MINDGROVE_I2C1)
+
+  FAR struct i2c_master_s *i2c1;
+
+  i2c1 = mg_i2c_initialize(1);
+  if (i2c1 != NULL)
+    {
+      ret = i2c_register(i2c1, 1);   /* Creates /dev/i2c0 */
+      if (ret < 0)
+        {
+          _alert("ERROR: Failed to register I2C1: %d\n", ret);
+        }
+    }
+
 #endif
   return 0;
 }

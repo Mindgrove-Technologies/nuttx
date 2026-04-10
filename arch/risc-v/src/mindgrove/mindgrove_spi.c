@@ -76,7 +76,10 @@ static void mg_spi_exchange(FAR struct spi_dev_s *dev,
                             FAR void *rxbuffer,
                             size_t nwords);
 static void mg_spi_select(struct spi_dev_s *dev, uint32_t devid, bool selected);
+#ifdef CONFIG_SPI_HWFEATURES
+
 static int mg_spi_hwfeatures(FAR struct spi_dev_s *dev, spi_hwfeatures_t features);
+#endif
 struct mg_spi_config_s
 {
   uint32_t clk_freq;    /* SPI clock frequency */
@@ -286,7 +289,8 @@ static struct mg_spi_priv_s g_mg_spi3_priv =
 //   return 0;
 // }
 
- 
+#ifdef CONFIG_SPI_HWFEATURES
+
 static int mg_spi_hwfeatures(FAR struct spi_dev_s *dev, spi_hwfeatures_t features)
 {
   FAR struct mg_spi_priv_s *priv = (FAR struct mg_spi_priv_s *)dev;
@@ -310,6 +314,8 @@ static int mg_spi_hwfeatures(FAR struct spi_dev_s *dev, spi_hwfeatures_t feature
 
   return OK;
 }
+#endif
+
 static void mg_spi_select(struct spi_dev_s *dev, uint32_t devid, bool selected)
 {
   FAR struct mg_spi_priv_s *priv = (FAR struct mg_spi_priv_s *)dev;
