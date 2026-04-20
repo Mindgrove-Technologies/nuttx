@@ -33,6 +33,7 @@
 #include <nuttx/fs/fs.h>
 #include <nuttx/input/buttons.h>
 #include "mindgrove_spi.h"
+#include "mindgrove_watchdog.h"
 #include <nuttx/spi/spi_transfer.h>
 #include "secure-iot.h"
 #include <nuttx/spi/spi.h>
@@ -99,4 +100,16 @@ struct spi_dev_s *spi;
 #endif
 
   return 0;
+
+  #if defined(CONFIG_WATCHDOG)
+  ret = mg_wdt_initialize("/dev/watchdog0", false);
+  if (ret < 0)
+    {
+      printf("ERROR: Failed to register /dev/watchdog0: %d\n", ret);
+    }
+  else
+    {
+      printf("Registered /dev/watchdog0 successfully\n");
+    }
+#endif
 }
