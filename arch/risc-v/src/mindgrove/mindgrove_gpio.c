@@ -32,9 +32,6 @@ unsigned int* pinmux_reg = (unsigned int* ) PINMUX0_BASE;
 
 #define BOARD_NGPIO 45
 
-#define GPIOC_TOGGLE _GPIOC(7)
-
-
 #define MINDGROVE_IRQ_GPIO_INT0 (MINDGROVE_PLIC_START)
 
 
@@ -158,7 +155,7 @@ struct mindgrovegpio_dev_s
 };
 
 // Single array for all pins
-static struct mindgrovegpio_dev_s g_mindgrove_gpio[45];
+static struct mindgrovegpio_dev_s g_mindgrove_gpio[3];
 
 
 /****************************************************************************
@@ -275,12 +272,12 @@ int mg_go_attach(FAR struct gpio_dev_s *dev, pin_interrupt_t cb)
     {
         case GPIO_INTERRUPT_FALLING_PIN:
         case GPIO_INTERRUPT_LOW_PIN:
-            low_ena = 0;
+            low_ena = 1;
             break;
 
         case GPIO_INTERRUPT_RISING_PIN:
         case GPIO_INTERRUPT_HIGH_PIN:
-            low_ena = 1;
+            low_ena = 0;
             break;
 
         default:
@@ -305,50 +302,43 @@ int mg_go_attach(FAR struct gpio_dev_s *dev, pin_interrupt_t cb)
     {
         reg = getreg32(GPIO_PINMUX_BASE + GPIO_INTR_OFFSET);
         if (low_ena)
-            GPIO_PINMUX_REG->GPIO_INTR &= ~mask_upper;
+            reg &= ~mask_upper;
         else
-            GPIO_PINMUX_REG->GPIO_INTR |= mask_upper;
+            reg |= mask_upper;
         putreg32(reg, GPIO_PINMUX_BASE + GPIO_INTR_OFFSET);
     }
-    //uint32_t intr_reg = getreg32(GPIO_BASE + GPIO_INTR_OFFSET);
-    //printf("DEBUG: GPIO_INTR after attach = 0x%x\n", intr_reg);
 
     return OK;
 }
 
+#include <nuttx/signal.h>
+
 static int mg_gpio_isr(int irq, FAR void *context, FAR void *arg)
 {
     FAR struct mindgrovegpio_dev_s *priv = arg;
-
-    //printf(">>> ISR fired! pin=%d, callback=%p\n", priv->id, priv->callback);
-
-    if (priv && priv->callback)
+     if (priv && priv->callback)
     {
-        // printf(">>> Calling callback now...\n");
+        //printf(">>> Calling callback now...\n");
         priv->callback(&priv->gpio, priv->id);
-        // printf(">>> Callback returned\n");
+        //up_disable_irq(irq);
+        //printf(">>> Callback returned\n");
     }
     else
     {
         //printf(">>> No callback set!\n");
     }
-
     return OK;
 }
-
-
 
 int mg_go_enable(FAR struct gpio_dev_s *dev, bool enable)
 {
     FAR struct mindgrovegpio_dev_s *priv =
         (FAR struct mindgrovegpio_dev_s *)dev;
-    // printf("\n hello enable");
-    printf("Before enable: priv->callback=%p\n", priv->callback);
 
-    if (priv->id > 44)
+    if (!priv || priv->id > 44)
         return -EINVAL;
 
-    int irq = MINDGROVE_PLIC_START + GPIO0_IRQn + priv->id;;
+    int irq = MINDGROVE_PLIC_START + GPIO0_IRQn + priv->id;
 
     if (enable)
     {
@@ -412,7 +402,7 @@ int mg_go_setpintype(FAR struct gpio_dev_s *dev,
       return OK;
     }
     
-#define MINDGROVE_NGPIO  2
+#define MINDGROVE_NGPIO  3
 
 
 
@@ -425,28 +415,23 @@ int mg_go_setpintype(FAR struct gpio_dev_s *dev,
  ****************************************************************************/
 int mindgrove_gpio_init(void)
 {
-
     for (int i = 0; i < MINDGROVE_NGPIO; i++)
     {
+        /* 🔴 CRITICAL: zero everything */
+        memset(&g_mindgrove_gpio[i], 0,
+               sizeof(struct mindgrovegpio_dev_s));
+
         g_mindgrove_gpio[i].gpio.gp_ops     = &gpin_ops;
         g_mindgrove_gpio[i].gpio.gp_pintype = GPIO_INPUT_PIN;
         g_mindgrove_gpio[i].id              = i;
-        // g_mindgrove_gpio[i].callback        = NULL;
-        // g_mindgrove_gpio[i].irq = MINDGROVE_PLIC_START + GPIO0_IRQn + i;
 
         gpio_pin_register(&g_mindgrove_gpio[i].gpio, i);
 
         configure_gpio(false, (1ULL << i)); /* default INPUT */
-
-
-
     }
 
     return OK;
 }
-
-
-
 
  /* CONFIG_DEV_GPIO && !CONFIg_mindgrove_gpio_LOWER_HALF */
 
