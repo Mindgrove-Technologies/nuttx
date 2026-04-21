@@ -59,7 +59,7 @@
  * provide some minimal implementation of up_putc.
  */
 
-#define CEIL_DIV_US(x, y) ((volatile uint16_t)(((x) + (y) - 1U) / (y)))
+#define CEIL_DIV_US(x, y) ((volatile uint16_t)(((x) + ((y) / 2)) / (y)))
 
 #ifdef USE_SERIALDRIVER
 
@@ -404,7 +404,8 @@ static int up_setup(struct uart_dev_s *dev)
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
   uint16_t baud_count=CEIL_DIV_US(CLOCK_FREQUENCY_FPGA,16U*(priv->baud));
-
+  // uint16_t baud_count =16;
+//  printf("baud:, %d",baud_count0);
   up_serialout(priv, UART_BAUD_OFFSET, baud_count);
   up_serialout(priv, UART_CTRL_OFFSET, 0x0000);
 

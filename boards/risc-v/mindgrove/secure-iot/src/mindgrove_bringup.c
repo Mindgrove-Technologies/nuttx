@@ -99,7 +99,7 @@ struct spi_dev_s *spi;
     }
 #endif
 
-  return 0;
+ 
 
   #if defined(CONFIG_WATCHDOG)
   ret = mg_wdt_initialize("/dev/watchdog0", false);
@@ -112,4 +112,5 @@ struct spi_dev_s *spi;
       printf("Registered /dev/watchdog0 successfully\n");
     }
 #endif
+ return 0;
 }

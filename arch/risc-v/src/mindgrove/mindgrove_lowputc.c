@@ -94,6 +94,7 @@ void mindgrove_lowsetup(void)
 
   /* default baudrate set by fpga fabric is 1e6 */
   unsigned int baud_count = (CLOCK_FREQUENCY_FPGA / (16 *MINDGROVE_CONSOLE_BAUD ));
+// uint16_t baud_count=16;
   putreg16(baud_count,MINDGROVE_CONSOLE_BASE);
   UART_REG(0)->CTRL = (STOP_BITS(0) | PARITY(0) | UART_TX_RX_LEN(8));
   // printf("hiiii");

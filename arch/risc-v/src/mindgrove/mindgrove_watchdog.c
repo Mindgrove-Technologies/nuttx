@@ -184,9 +184,35 @@ static int mg_wdt_start(FAR struct watchdog_lowerhalf_s *lower)
 
   // putreg32(5,MG_WDT_CYCLES);
 // printf("inside start%d,%d\n\r",cycles,MG_WDT_CYCLES);
-
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
 *(volatile uint32_t *)0x40500 = 1;
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+
+
 *(volatile uint32_t *)0x40508 = 5;
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
+asm volatile("nop");
 
   /* 2. Configure control register:
    *    Hard-reset mode : HARD_RESET bit only (bit 1)
@@ -421,7 +447,7 @@ int mg_wdt_initialize(FAR const char *devpath, bool soft_reset)
 {
   FAR struct mg_wdt_lowerhalf_s *priv = &g_mg_wdt_priv;
   FAR void *handle;
-
+printf("insiode init");
   DEBUGASSERT(devpath != NULL);
 
   /* Initialise private state */
