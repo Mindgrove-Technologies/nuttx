@@ -13,7 +13,6 @@
 #include "plic.h"
 #include "riscv_internal.h"
 #include "mindgrove_irq.h"
-// #include "types.h"
 #ifndef OK
 #  define OK 0
 #endif
@@ -30,13 +29,9 @@ unsigned int* pinmux_reg = (unsigned int* ) PINMUX0_BASE;
 
 #define ENOINST  143 /*invalid uart instance*/
 
-#define BOARD_NGPIO 45
+#define BOARD_NGPIO 3
 
 #define MINDGROVE_IRQ_GPIO_INT0 (MINDGROVE_PLIC_START)
-
-
-// #if defined(CONFIG_DEV_GPIO) && !defined(CONFIg_mindgrove_gpio_LOWER_HALF)
-
 
 
 uint8_t configure_gpio(bool direction, uint64_t gpio_pins)
@@ -47,7 +42,6 @@ uint8_t configure_gpio(bool direction, uint64_t gpio_pins)
     
     if (gpio_pins >> 45) 
     {
-        // Invalid pin
         return ENOINST;
     }
 
@@ -139,8 +133,6 @@ uint8_t configure_gpio(bool direction, uint64_t gpio_pins)
 }
 
 
-
-
 /****************************************************************************
  * Private Types
  ****************************************************************************/
@@ -155,7 +147,7 @@ struct mindgrovegpio_dev_s
 };
 
 // Single array for all pins
-static struct mindgrovegpio_dev_s g_mindgrove_gpio[3];
+static struct mindgrovegpio_dev_s g_mindgrove_gpio[BOARD_NGPIO];
 
 
 /****************************************************************************
@@ -204,8 +196,6 @@ int mg_go_write(FAR struct gpio_dev_s *dev, bool value)
 
     uint32_t mask;
 
-    //printf("GPIO %u -> %d\n", mindgrovegpio->id, value);
-
     if (mindgrovegpio->id > 44)
       {
         return -EINVAL;
@@ -250,13 +240,7 @@ int mg_go_attach(FAR struct gpio_dev_s *dev, pin_interrupt_t cb)
     FAR struct mindgrovegpio_dev_s *priv =
         (FAR struct mindgrovegpio_dev_s *)dev;
 
-    //printf("mg_go_attach called pin=%d cb=%p\n",
-       //priv->id, cb);
-
     priv->callback = cb;
-
-    //printf("mg_go_attach called pin=%d cb=%p pintype=%d\n",
-       //priv->id, priv->callback, priv->pintype);
 
     if (priv->id > 44)
         return -EINVAL;
@@ -283,8 +267,6 @@ int mg_go_attach(FAR struct gpio_dev_s *dev, pin_interrupt_t cb)
         default:
             return -EINVAL;
     }
-    //printf("\n attach");
-
     uint32_t mask_lower = gpio_mask & 0xFFFFFFFFULL;
     uint16_t mask_upper = (gpio_mask >> 32) & 0x1FFFULL;
     uint32_t  reg;
@@ -318,10 +300,7 @@ static int mg_gpio_isr(int irq, FAR void *context, FAR void *arg)
     FAR struct mindgrovegpio_dev_s *priv = arg;
      if (priv && priv->callback)
     {
-        //printf(">>> Calling callback now...\n");
         priv->callback(&priv->gpio, priv->id);
-        //up_disable_irq(irq);
-        //printf(">>> Callback returned\n");
     }
     else
     {
@@ -369,8 +348,6 @@ int mg_go_setpintype(FAR struct gpio_dev_s *dev,
     uint32_t dir;
 
     dir = getreg32(GPIO_BASE + GPIO_DIRECTION_OFFSET);
-    // printf("DIR before: 0x%08x\n", dir);
-
 
     priv->pintype = pintype;
     dev->gp_pintype   = pintype;
@@ -397,15 +374,10 @@ int mg_go_setpintype(FAR struct gpio_dev_s *dev,
         return -EINVAL;
       }
       dir = getreg32(GPIO_BASE + GPIO_DIRECTION_OFFSET);
-    //   printf("DIR after : 0x%08x\n", dir);
       
       return OK;
     }
     
-#define MINDGROVE_NGPIO  3
-
-
-
 /****************************************************************************
  * Public Functions
  ****************************************************************************/
@@ -415,11 +387,8 @@ int mg_go_setpintype(FAR struct gpio_dev_s *dev,
  ****************************************************************************/
 int mindgrove_gpio_init(void)
 {
-    for (int i = 0; i < MINDGROVE_NGPIO; i++)
+    for (int i = 0; i < BOARD_NGPIO; i++)
     {
-        /* 🔴 CRITICAL: zero everything */
-        memset(&g_mindgrove_gpio[i], 0,
-               sizeof(struct mindgrovegpio_dev_s));
 
         g_mindgrove_gpio[i].gpio.gp_ops     = &gpin_ops;
         g_mindgrove_gpio[i].gpio.gp_pintype = GPIO_INPUT_PIN;
