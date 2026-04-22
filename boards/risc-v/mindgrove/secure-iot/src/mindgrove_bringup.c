@@ -53,7 +53,7 @@ int mindgrove_bringup(void)
 struct spi_dev_s *spi;
   int ret;
 
-#if CONFIG_MINDGROVE_SPI0
+#if defined(CONFIG_MINDGROVE_SPI0)
   spi = mg_spibus_initialize(0);
   if (spi != NULL)
     {
@@ -64,7 +64,7 @@ struct spi_dev_s *spi;
     }
 #endif
 
-#if CONFIG_MINDGROVE_SPI1
+#if defined(CONFIG_MINDGROVE_SPI1)
   spi = mg_spibus_initialize(1);
   if (spi != NULL)
     {
@@ -75,7 +75,7 @@ struct spi_dev_s *spi;
     }
 #endif
 
-#if CONFIG_MINDGROVE_SPI2
+#if defined(CONFIG_MINDGROVE_SPI2)
 
   spi = mg_spibus_initialize(2);
   if (spi != NULL)
@@ -87,7 +87,7 @@ struct spi_dev_s *spi;
     }
 #endif
 
-#if CONFIG_MINDGROVE_SPI3
+#if defined(CONFIG_MINDGROVE_SPI3)
   spi = mg_spibus_initialize(3);
   if (spi != NULL)
     {
