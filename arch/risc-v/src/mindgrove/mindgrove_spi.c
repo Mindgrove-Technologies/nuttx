@@ -409,7 +409,8 @@ static int mg_spi_lock(FAR struct spi_dev_s *dev, bool lock)
 static uint32_t mg_spi_setfrequency(struct spi_dev_s *dev,
                                     uint32_t frequency)
 {
-  uint64_t CLOCK_FREQUENCY_BASE = CLOCK_FREQUENCY_FPGA;
+  uint64_t CLOCK_FREQUENCY_BASE =CONFIG_MG_CLOCK_FREQUENCY;
+;
   
   struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)dev;
   uint32_t divider;

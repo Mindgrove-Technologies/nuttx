@@ -1,4 +1,4 @@
-
+#include <nuttx/config.h>
 #include <nuttx/i2c/i2c_master.h>
 #include "mindgrove_i2c.h"
 #include "riscv_internal.h"
@@ -80,7 +80,7 @@ FAR struct i2c_master_s *mg_i2c_initialize(int bus)
 
 static int mg_i2c_setup(FAR struct i2c_master_s *dev)
 {
-    uint64_t CLOCK_FREQUENCY_BASE = CLOCK_FREQUENCY_FPGA;
+    uint64_t CLOCK_FREQUENCY_BASE = CONFIG_MG_CLOCK_FREQUENCY;
     FAR struct mg_i2c_priv_s *priv = (FAR struct mg_i2c_priv_s *)dev;
     uint32_t freq = priv->frequency; /* default bus speed */
 

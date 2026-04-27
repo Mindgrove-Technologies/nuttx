@@ -1,3 +1,9 @@
+config MG_CLOCK_FREQUENCY
+    int "Mindgrove Clock Frequency (Hz)"
+    default 700000000
+    help
+        This defines the system clock frequency used by peripherals.
+
 #
 # Mindgrove Peripheral Configuration
 #
