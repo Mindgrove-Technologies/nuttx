@@ -407,8 +407,7 @@ static int mg_spi_lock(FAR struct spi_dev_s *dev, bool lock)
 static uint32_t mg_spi_setfrequency(struct spi_dev_s *dev,
                                     uint32_t frequency)
 {
-  uint64_t CLOCK_FREQUENCY_BASE =CONFIG_MG_CLOCK_FREQUENCY;
-;
+
   
   struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)dev;
   uint32_t divider;
@@ -416,8 +415,8 @@ static uint32_t mg_spi_setfrequency(struct spi_dev_s *dev,
   DEBUGASSERT(frequency > 0);
 
   priv->frequency = frequency;
-  divider = (CLOCK_FREQUENCY_BASE / frequency) - 1U;
-  priv->actual = CLOCK_FREQUENCY_BASE / (divider + 1U);
+  divider = (CONFIG_MG_CLOCK_FREQUENCY / frequency) - 1U;
+  priv->actual = CONFIG_MG_CLOCK_FREQUENCY / (divider + 1U);
 
   modifyreg32(MG_SPI_CLK_CTRL, SPI_CLK_PRESCALAR_MASK, divider & SPI_CLK_PRESCALAR_MASK);
 
