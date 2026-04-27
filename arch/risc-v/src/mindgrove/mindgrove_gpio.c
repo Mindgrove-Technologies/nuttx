@@ -7,6 +7,7 @@
 #include <nuttx/irq.h>
 #include <arch/irq.h>
 #include <nuttx/ioexpander/gpio.h>
+#if defined(CONFIG_DEV_GPIO)
 
 #include "mindgrove_gpio.h"
 #include "secure_iot_reg.h"
@@ -32,7 +33,6 @@ unsigned int* pinmux_reg = (unsigned int* ) PINMUX0_BASE;
 #define BOARD_NGPIO 3
 
 #define MINDGROVE_IRQ_GPIO_INT0 (MINDGROVE_PLIC_START)
-
 
 uint8_t configure_gpio(bool direction, uint64_t gpio_pins)
 {
@@ -402,5 +402,5 @@ int mindgrove_gpio_init(void)
     return OK;
 }
 
- /* CONFIG_DEV_GPIO && !CONFIg_mindgrove_gpio_LOWER_HALF */
+ #endif/* CONFIG_DEV_GPIO && !CONFIG_mindgrove_gpio_LOWER_HALF */
 
