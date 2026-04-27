@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <nuttx/mutex.h>
 #include "mindgrove_spi.h"
+#include "secure_iot_reg.h"
 #include <nuttx/arch.h>
 #include <nuttx/irq.h>
 #include <nuttx/mutex.h>
@@ -15,6 +16,7 @@
 #include <debug.h>
 #include <arch/board/board.h>
 #include "riscv_internal.h"
+
 
 #define MG_SPI0_BASE 0x20000u
 #define MG_SPI1_BASE 0x20100u
@@ -407,7 +409,8 @@ static int mg_spi_lock(FAR struct spi_dev_s *dev, bool lock)
 static uint32_t mg_spi_setfrequency(struct spi_dev_s *dev,
                                     uint32_t frequency)
 {
-
+  uint64_t CLOCK_FREQUENCY_BASE = CLOCK_FREQUENCY_FPGA;
+  
   struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)dev;
   uint32_t divider;
 

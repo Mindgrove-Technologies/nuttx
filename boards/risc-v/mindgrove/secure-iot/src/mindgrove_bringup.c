@@ -34,6 +34,7 @@
 #include <nuttx/input/buttons.h>
 #include "mindgrove_spi.h"
 #include <nuttx/spi/spi_transfer.h>
+#include <nuttx/i2c/i2c_master.h>
 #include "secure-iot.h"
 #include <nuttx/spi/spi.h>
 #include "mindgrove_i2c.h"

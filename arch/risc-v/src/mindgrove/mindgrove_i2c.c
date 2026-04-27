@@ -3,6 +3,7 @@
 #include "mindgrove_i2c.h"
 #include "riscv_internal.h"
 #include <stdio.h>
+#include "secure_iot_reg.h"
 struct i2c_msg_s __i2c_msg_probe;
 /* I2C ops callbacks */
 
@@ -79,6 +80,7 @@ FAR struct i2c_master_s *mg_i2c_initialize(int bus)
 
 static int mg_i2c_setup(FAR struct i2c_master_s *dev)
 {
+    uint64_t CLOCK_FREQUENCY_BASE = CLOCK_FREQUENCY_FPGA;
     FAR struct mg_i2c_priv_s *priv = (FAR struct mg_i2c_priv_s *)dev;
     uint32_t freq = priv->frequency; /* default bus speed */
 
