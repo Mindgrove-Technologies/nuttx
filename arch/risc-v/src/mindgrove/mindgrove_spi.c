@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <nuttx/mutex.h>
 #include "mindgrove_spi.h"
-#include "secure_iot_reg.h"
 #include <nuttx/arch.h>
 #include <nuttx/irq.h>
 #include <nuttx/mutex.h>
@@ -16,7 +15,6 @@
 #include <debug.h>
 #include <arch/board/board.h>
 #include "riscv_internal.h"
-
 
 #define MG_SPI0_BASE 0x20000u
 #define MG_SPI1_BASE 0x20100u
