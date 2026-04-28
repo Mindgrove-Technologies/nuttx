@@ -17,7 +17,7 @@
  * 32..44 -> GPIO_PINMUX_BASE
  */
 
-#define MINDGROVE_NGPIO        3
+#define MINDGROVE_NGPIO        45
 #define GPIO_VALID(p)          ((p) < MINDGROVE_NGPIO)
 
 #define GPIO_LOWER(x)          ((uint32_t)((x) & 0xffffffffULL))
