@@ -61,7 +61,7 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 0); /* Creates /dev/spi0 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI0: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI0: %d\n\r", ret);
 #endif
     }
 #endif
@@ -72,7 +72,7 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 1); /* Creates /dev/spi1 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI1: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI1: %d\n\r", ret);
 #endif
     }
 #endif
@@ -84,7 +84,7 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 2); /* Creates /dev/spi2 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI2: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI2: %d\n\r", ret);
 #endif
     }
 #endif
@@ -95,7 +95,7 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 3); /* Creates /dev/spi3 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI3: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI3: %d\n\r", ret);
 #endif
     }
 #endif
@@ -111,7 +111,7 @@ struct spi_dev_s *spi;
       ret = i2c_register(i2c0, 0);   /* Creates /dev/i2c0 */
       if (ret < 0)
         {
-          _alert("ERROR: Failed to register I2C0: %d\n", ret);
+          _alert("ERROR: Failed to register I2C0: %d\n\r", ret);
         }
     }
 
@@ -126,7 +126,7 @@ struct spi_dev_s *spi;
       ret = i2c_register(i2c1, 1);   /* Creates /dev/i2c0 */
       if (ret < 0)
         {
-          _alert("ERROR: Failed to register I2C1: %d\n", ret);
+          _alert("ERROR: Failed to register I2C1: %d\n\r", ret);
         }
     }
 

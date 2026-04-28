@@ -418,7 +418,7 @@ static uint32_t mg_spi_setfrequency(struct spi_dev_s *dev,
 
   modifyreg32(MG_SPI_CLK_CTRL, SPI_CLK_PRESCALAR_MASK, divider & SPI_CLK_PRESCALAR_MASK);
 
-  spiinfo("frequency=%u, actual=%u\n", priv->frequency, priv->actual);
+  spiinfo("frequency=%u, actual=%u\n\r", priv->frequency, priv->actual);
 
   return priv->actual;
 }
@@ -428,7 +428,7 @@ static void mg_spi_setmode(struct spi_dev_s *dev, enum spi_mode_e mode)
 
   struct mg_spi_priv_s *priv = (struct mg_spi_priv_s *)dev;
 
-  spiinfo("mode=%d\n", mode);
+  spiinfo("mode=%d\n\r", mode);
 
   // spi mode
 

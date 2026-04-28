@@ -96,7 +96,6 @@ void mindgrove_lowsetup(void)
   unsigned int baud_count = (CONFIG_MG_CLOCK_FREQUENCY / (16 *MINDGROVE_CONSOLE_BAUD ));
   putreg16(baud_count,MINDGROVE_CONSOLE_BASE);
   UART_REG(0)->CTRL = (STOP_BITS(0) | PARITY(0) | UART_TX_RX_LEN(8));
-  // printf("hiiii");
   /* Enable TX */
   
 #endif /* HAVE_SERIAL_CONSOLE && !CONFIG_SUPPRESS_UART_CONFIG */
