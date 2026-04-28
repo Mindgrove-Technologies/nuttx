@@ -29,8 +29,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include <nuttx/ioexpander/gpio.h>
 
-#ifndef SHAKTI_GPIO_H
-#define SHAKTI_GPIO_H
+#ifndef __ARCH_RISCV_SRC_CHIP_MINDGROVE_GPIO_H
+#define __ARCH_RISCV_SRC_CHIP_MINDGROVE_GPIO_H
 
 #define GPIO_HIGH 1
 #define GPIO_LOW 0
@@ -48,16 +48,5 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define GPIO_TOGGLE_OFFSET         0x20
 #define GPIO_INTR_OFFSET           0x30
 #define GPIO_PULLUP_OFFSET         0x38
-
-
-
-
-
-int mg_go_read(FAR struct gpio_dev_s *dev, FAR bool *value);
-int mg_go_write(FAR struct gpio_dev_s *dev, bool value);
-int mg_go_attach(FAR struct gpio_dev_s *dev, pin_interrupt_t cb);
-int mg_go_enable(FAR struct gpio_dev_s *dev, bool enable);
-int mg_go_setpintype(FAR struct gpio_dev_s *dev, enum gpio_pintype_e pintype);
-int mindgrove_gpio_init(void);
 
 #endif
