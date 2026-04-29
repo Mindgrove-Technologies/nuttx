@@ -49,4 +49,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define GPIO_INTR_OFFSET           0x30
 #define GPIO_PULLUP_OFFSET         0x38
 
+int mindgrove_gpio_init(void);
+
 #endif
