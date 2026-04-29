@@ -34,8 +34,10 @@
 #include <nuttx/input/buttons.h>
 #include "mindgrove_spi.h"
 #include <nuttx/spi/spi_transfer.h>
+#include <nuttx/i2c/i2c_master.h>
 #include "secure-iot.h"
 #include <nuttx/spi/spi.h>
+#include "mindgrove_i2c.h"
 
 
 
@@ -59,7 +61,7 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 0); /* Creates /dev/spi0 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI0: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI0: %d\n\r", ret);
 #endif
     }
 #endif
@@ -70,7 +72,7 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 1); /* Creates /dev/spi1 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI1: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI1: %d\n\r", ret);
 #endif
     }
 #endif
@@ -82,7 +84,7 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 2); /* Creates /dev/spi2 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI2: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI2: %d\n\r", ret);
 #endif
     }
 #endif
@@ -93,10 +95,41 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 3); /* Creates /dev/spi3 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI3: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI3: %d\n\r", ret);
 #endif
     }
 #endif
 
+
+#if defined(CONFIG_MINDGROVE_I2C0)
+
+  FAR struct i2c_master_s *i2c0;
+
+  i2c0 = mg_i2c_initialize(0);
+  if (i2c0 != NULL)
+    {
+      ret = i2c_register(i2c0, 0);   /* Creates /dev/i2c0 */
+      if (ret < 0)
+        {
+          _alert("ERROR: Failed to register I2C0: %d\n\r", ret);
+        }
+    }
+
+#endif
+#if defined(CONFIG_MINDGROVE_I2C1)
+
+  FAR struct i2c_master_s *i2c1;
+
+  i2c1 = mg_i2c_initialize(1);
+  if (i2c1 != NULL)
+    {
+      ret = i2c_register(i2c1, 1);   /* Creates /dev/i2c0 */
+      if (ret < 0)
+        {
+          _alert("ERROR: Failed to register I2C1: %d\n\r", ret);
+        }
+    }
+
+#endif
   return 0;
 }
