@@ -1,3 +1,9 @@
+config MG_CLOCK_FREQUENCY
+    int "Mindgrove Clock Frequency (Hz)"
+    default 700000000
+    help
+        This defines the system clock frequency used by peripherals.
+
 #
 # Mindgrove Peripheral Configuration
 #
@@ -142,3 +148,32 @@ config MINDGROVE_SPI3
     depends on MINDGROVE_HAVE_SPI3
     select MINDGROVE_SPI
     select SPI_DRIVER
+    
+# =========================
+# I2C SECTION
+# =========================
+
+config MINDGROVE_HAVE_I2C0
+    bool
+    default y
+
+config MINDGROVE_I2C0
+    bool "Enable I2C0"
+    default y
+    depends on MINDGROVE_HAVE_I2C0
+    select MINDGROVE_I2C
+    select I2C
+    select I2C_CHARDRIVER
+
+
+config MINDGROVE_HAVE_I2C1
+    bool
+    default y
+
+config MINDGROVE_I2C1
+    bool "Enable I2C1"
+    default y
+    depends on MINDGROVE_HAVE_I2C1
+    select MINDGROVE_I2C
+    select I2C
+    select I2C_CHARDRIVER

@@ -403,7 +403,7 @@ static int up_setup(struct uart_dev_s *dev)
 {
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
-  uint16_t baud_count=CEIL_DIV_US(CLOCK_FREQUENCY_FPGA,16U*(priv->baud));
+  uint16_t baud_count=CEIL_DIV_US(CONFIG_MG_CLOCK_FREQUENCY,16U*(priv->baud));
 
   up_serialout(priv, UART_BAUD_OFFSET, baud_count);
   up_serialout(priv, UART_CTRL_OFFSET, 0x0000);
