@@ -15,3 +15,6 @@ endif
 ifdef CONFIG_I2C_DRIVER
 CHIP_CSRCS += mindgrove_i2c.c
 endif
+ifdef CONFIG_DEV_GPIO
+CHIP_CSRCS += mindgrove_gpio.c
+endif

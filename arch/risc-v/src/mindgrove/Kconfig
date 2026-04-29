@@ -78,6 +78,20 @@ config MINDGROVE_UART4
     select ARCH_HAVE_SERIAL_TERMIOS
     select MINDGROVE_UART
 
+# =========================
+# GPIO SECTION
+# =========================
+
+config MINDGROVE_HAVE_GPIO
+    bool
+    default y
+
+config MINDGROVE_GPIO
+    bool "GPIO Support"
+    default n
+    depends on MINDGROVE_HAVE_GPIO
+    depends on DEV_GPIO
+
 
 # =========================
 # SPI SECTION

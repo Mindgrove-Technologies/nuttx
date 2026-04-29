@@ -37,6 +37,7 @@
 #include <nuttx/i2c/i2c_master.h>
 #include "secure-iot.h"
 #include <nuttx/spi/spi.h>
+#include "mindgrove_gpio.h"
 #include "mindgrove_i2c.h"
 
 
@@ -98,6 +99,16 @@ struct spi_dev_s *spi;
       if (ret < 0) _alert("ERROR: Failed to register SPI3: %d\n\r", ret);
 #endif
     }
+#endif
+
+#ifdef CONFIG_DEV_GPIO
+
+  ret = mindgrove_gpio_init();
+
+  if (ret<0){
+    serr("ERROR: Failed to initialize GPIO\n");
+  }
+  
 #endif
 
 

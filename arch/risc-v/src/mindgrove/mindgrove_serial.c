@@ -313,7 +313,7 @@ static uart_dev_t g_uart4port =
   .recv      =
   {
     .size    = CONFIG_UART4_RXBUFSIZE,
-    .buffer  = g_uart0rxbuffer,
+    .buffer  = g_uart4rxbuffer,
   },
   .xmit      =
   {

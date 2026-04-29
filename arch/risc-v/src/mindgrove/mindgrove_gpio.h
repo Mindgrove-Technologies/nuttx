@@ -27,9 +27,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 #include <stdint.h>
+#include <nuttx/ioexpander/gpio.h>
 
-#ifndef SHAKTI_GPIO_H
-#define SHAKTI_GPIO_H
+#ifndef __ARCH_RISCV_SRC_CHIP_MINDGROVE_GPIO_H
+#define __ARCH_RISCV_SRC_CHIP_MINDGROVE_GPIO_H
 
 #define GPIO_HIGH 1
 #define GPIO_LOW 0
@@ -40,12 +41,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define GPIO_DIRECTION_CNTRL_REG (uint32_t*) (GPIO_START  + (0 * GPIO_OFFSET ))
 #define GPIO_DATA_REG (uint32_t*) (GPIO_START + (1 * GPIO_OFFSET ))
 #define GPIO_INTERRUPT_CONFIG_REG (uint32_t*) (GPIO_START + (6 * GPIO_OFFSET ))
+#define GPIO_DIRECTION_OFFSET      0x00
+#define GPIO_DATA_OFFSET           0x08
+#define GPIO_SET_OFFSET            0x10
+#define GPIO_CLEAR_OFFSET          0x18
+#define GPIO_TOGGLE_OFFSET         0x20
+#define GPIO_INTR_OFFSET           0x30
+#define GPIO_PULLUP_OFFSET         0x38
 
-bool read_gpio(uint32_t);
+int mindgrove_gpio_init(void);
 
-void set_gpio(uint32_t,bool);
-
-void configure_gpio(uint32_t,bool);
-
-int shakti_gpio_init(void);
 #endif
