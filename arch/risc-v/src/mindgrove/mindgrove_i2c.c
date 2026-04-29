@@ -1,8 +1,9 @@
-
+#include <nuttx/config.h>
 #include <nuttx/i2c/i2c_master.h>
 #include "mindgrove_i2c.h"
 #include "riscv_internal.h"
 #include <stdio.h>
+#include "secure_iot_reg.h"
 struct i2c_msg_s __i2c_msg_probe;
 /* I2C ops callbacks */
 
@@ -92,7 +93,7 @@ static int mg_i2c_setup(FAR struct i2c_master_s *dev)
 
     /* Compute SCL divider */
     uint64_t scl_div =
-        CLOCK_FREQUENCY_BASE /
+        CONFIG_MG_CLOCK_FREQUENCY /
         (2U * (MG_I2C_PRESCALER + 1U) * (uint64_t)freq);
 
     putreg32((uint8_t)(scl_div & MG_I2C_SCL_MASK),

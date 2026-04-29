@@ -1,3 +1,9 @@
+config MG_CLOCK_FREQUENCY
+    int "Mindgrove Clock Frequency (Hz)"
+    default 700000000
+    help
+        This defines the system clock frequency used by peripherals.
+
 #
 # Mindgrove Peripheral Configuration
 #
@@ -71,6 +77,20 @@ config MINDGROVE_UART4
     select UART4_SERIALDRIVER
     select ARCH_HAVE_SERIAL_TERMIOS
     select MINDGROVE_UART
+
+# =========================
+# GPIO SECTION
+# =========================
+
+config MINDGROVE_HAVE_GPIO
+    bool
+    default y
+
+config MINDGROVE_GPIO
+    bool "GPIO Support"
+    default n
+    depends on MINDGROVE_HAVE_GPIO
+    depends on DEV_GPIO
 
 
 # =========================
