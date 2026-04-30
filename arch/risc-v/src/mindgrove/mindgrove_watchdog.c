@@ -195,7 +195,7 @@ static int mg_wdt_start(FAR struct watchdog_lowerhalf_s *lower)
   /* 1. Load watchdog counter */
   putreg32(cycles, MG_WDT_CYCLES);
 
-  /* Small delay (if HW requires write settling) */
+  /* Small delay --these nops are just used for testing and not mandatory */
   for (volatile int i = 0; i < 8; i++)
     {
       __asm__ volatile ("nop");
