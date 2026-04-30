@@ -34,6 +34,8 @@
 #include <nuttx/input/buttons.h>
 #include "mindgrove_spi.h"
 #include <nuttx/spi/spi_transfer.h>
+#include <nuttx/timers/pwm.h>
+#include "mindgrove_pwm.h"
 #include <nuttx/i2c/i2c_master.h>
 #include "secure-iot.h"
 #include <nuttx/spi/spi.h>
@@ -54,7 +56,7 @@ int mindgrove_bringup(void)
 {
 
 struct spi_dev_s *spi;
-  int ret;
+int ret;
 
 #if defined(CONFIG_MINDGROVE_SPI0)
   spi = mg_spibus_initialize(0);
@@ -142,5 +144,31 @@ struct spi_dev_s *spi;
     }
 
 #endif
-  return 0;
+
+#if defined(CONFIG_PWM)
+  FAR struct pwm_lowerhalf_s *pwm;
+  char devpath[16];
+
+  for (int i = 0; i < 14; i++)  /* PWM_MAX_COUNT = 14 */
+    {
+      pwm = mg_pwm_initialize(i);
+      if (pwm == NULL)
+        {
+          printf("ERROR: mg_pwm_initialize(%d) returned NULL\n", i);
+          continue;
+        }
+
+      snprintf(devpath, sizeof(devpath), "/dev/pwm%d", i);
+      ret = pwm_register(devpath, pwm);
+      if (ret < 0)
+        {
+          printf("ERROR: Failed to register %s: %d\n", devpath, ret);
+        }
+      else
+        {
+          printf("Registered %s successfully\n", devpath);
+        }
+    }
+#endif
+return 0;
 }
