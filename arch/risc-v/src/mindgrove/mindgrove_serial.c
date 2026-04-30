@@ -59,7 +59,6 @@
  * provide some minimal implementation of up_putc.
  */
 
-
 #define CEIL_DIV_US(x, y) ((volatile uint16_t)(((x) + (y) - 1U) / (y)))
 
 #ifdef USE_SERIALDRIVER

@@ -4257,7 +4257,7 @@ typedef struct {                                /*!< OTP Structure              
 #define GPTIMER_OFFSET              0x00000020UL
 #define QSPI_OFFSET                 0x00000100UL
 
-#define CLOCK_FREQUENCY_FPGA        30000000UL
+#define CLOCK_FREQUENCY_FPGA        35000000UL
 #define CLOCK_FREQUENCY_ASIC        700000000UL
 extern volatile uint8_t log_level;
 extern volatile uint64_t CLOCK_FREQUENCY_BASE;
