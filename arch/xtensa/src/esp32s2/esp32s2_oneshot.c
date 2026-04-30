@@ -30,7 +30,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <nuttx/arch.h>
 #include <nuttx/timers/oneshot.h>
@@ -39,7 +39,7 @@
 #include "hardware/esp32s2_soc.h"
 
 #include "esp32s2_tim.h"
-#include "esp32s2_clockconfig.h"
+#include "esp_clk.h"
 #include "esp32s2_oneshot.h"
 
 #ifdef CONFIG_ESP32S2_ONESHOT
@@ -73,12 +73,14 @@ static int esp32s2_oneshot_handler(int irq, void *context, void *arg);
  *   the next level up.
  *
  * Input Parameters:
- *   irq   - IRQ associated to that interrupt
- *   arg -   A pointer to the argument provided when the interrupt was
- *           registered.
+ *   irq     - The interrupt number.
+ *   context - The context of the interrupt.
+ *   arg     -  A pointer to the argument provided when the interrupt was
+ *              registered.
  *
  * Returned Value:
- *   Zero on success; a negated errno value on failure.
+ *   Zero (OK) is returned on success; a negated errno value is returned
+ *   on failure.
  *
  ****************************************************************************/
 

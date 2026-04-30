@@ -25,7 +25,7 @@
 #include <nuttx/config.h>
 
 #include <assert.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 #include <inttypes.h>
 #include <stdbool.h>
@@ -36,9 +36,9 @@
 #include <nuttx/clock.h>
 #include <nuttx/spinlock.h>
 
-#include "esp32s3_clockconfig.h"
+#include "esp_clk.h"
 #include "esp32s3_freerun.h"
-#include "esp32s3_gpio.h"
+#include "esp_gpio.h"
 
 #ifdef CONFIG_ESP32S3_FREERUN
 

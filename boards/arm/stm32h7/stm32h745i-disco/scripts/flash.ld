@@ -188,12 +188,12 @@ SECTIONS
         *(.bss .bss.*)
         *(.gnu.linkonce.b.*)
         *(COMMON)
-        . = ALIGN(4);
+        . = ALIGN(8);
         _ebss = ABSOLUTE(.);
     } > sram
 
 #ifdef CONFIG_STM32H7_CORTEXM4_ENABLED
-    .shmem :
+    .shmem (NOLOAD):
     {
         . = ALIGN(4);
         *(.shmem);
@@ -201,7 +201,7 @@ SECTIONS
     } > shmem
 #endif
 
-    /* Emit the the D3 power domain section for locating BDMA data
+    /* Emit the D3 power domain section for locating BDMA data
      *
      * Static data with locate_data(".sram4") will be located
      * at start of SRAM4; the rest of SRAM4 will be added to the heap.

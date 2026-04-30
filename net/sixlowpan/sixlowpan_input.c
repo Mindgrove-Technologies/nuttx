@@ -53,7 +53,7 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include "nuttx/mm/iob.h"
 #include "nuttx/net/netdev.h"
@@ -722,7 +722,7 @@ static int sixlowpan_dispatch(FAR struct radio_driver_s *radio)
  *               must apply to all of the frames in the list.
  *
  * Returned Value:
- *   Zero (OK) is returned if the the frame was consumed; Otherwise a negated
+ *   Zero (OK) is returned if the frame was consumed; Otherwise a negated
  *   errno value is returned.
  *
  ****************************************************************************/

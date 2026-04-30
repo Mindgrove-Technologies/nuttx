@@ -26,7 +26,7 @@
 
 #include <nuttx/config.h>
 
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 #include <syslog.h>
 #include <string.h>
@@ -685,7 +685,7 @@ static void nrf91_usrsock_poll_work(void *arg)
         {
           while (g_usrsock.sock[pollfd->fd].recvpending == true)
             {
-              nxsig_usleep(100);
+              nxsched_usleep(100);
             }
         }
 

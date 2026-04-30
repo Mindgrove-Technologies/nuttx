@@ -113,7 +113,7 @@
  *   LED_SIGNAL          In a signal handler      No change
  *   LED_ASSERTION       An assertion failed      No change
  *   LED_PANIC           The system has crashed   Blinking
- *   LED_IDLE            STM32 is is sleep mode   Not used
+ *   LED_IDLE            STM32 is in sleep mode   Not used
  */
 
 #define LED_STARTED      0
@@ -144,12 +144,12 @@
 /* USART */
 
 /* USART1 at arduino D0/D1:
- *   USART1_RX - PB6
- *   USART1_TX - PB7
+ *   USART1_RX - PB7
+ *   USART1_TX - PB6
  */
 
-#define GPIO_USART1_RX      (GPIO_USART2_RX_2|GPIO_SPEED_HIGH)    /* PB6 */
-#define GPIO_USART1_TX      (GPIO_USART2_TX_2|GPIO_SPEED_HIGH)    /* PB7 */
+#define GPIO_USART1_RX      (GPIO_USART1_RX_2|GPIO_SPEED_HIGH)    /* PB7 */
+#define GPIO_USART1_TX      (GPIO_USART1_TX_2|GPIO_SPEED_HIGH)    /* PB6 */
 
 /* USART1 RS485_DIR - PA8 (arduino D7)
  * (compatible with RS485 Waveshare shield)
@@ -171,6 +171,14 @@
 
 #define GPIO_FDCAN1_RX      (GPIO_FDCAN1_RX_8|GPIO_SPEED_HIGH)    /* PD0 */
 #define GPIO_FDCAN1_TX      (GPIO_FDCAN1_TX_9|GPIO_SPEED_HIGH)    /* PD1 */
+
+/* Qencoder on TIM3:
+ *   TIM3_CH1IN - PB4 (D5)
+ *   TIM3_CH2IN - PC7 (D3)
+ */
+
+#define GPIO_TIM3_CH1IN     (GPIO_TIM3_CH1IN_2|GPIO_SPEED_HIGH)
+#define GPIO_TIM3_CH2IN     (GPIO_TIM3_CH2IN_6|GPIO_SPEED_HIGH)
 
 /* DMA channels *************************************************************/
 

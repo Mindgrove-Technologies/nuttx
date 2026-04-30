@@ -37,7 +37,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <nuttx/kmalloc.h>
 #include <nuttx/signal.h>
@@ -1098,7 +1098,7 @@ void mfrc522_softreset(FAR struct mfrc522_dev_s *dev)
 
   /* Wait the internal state machine to initialize */
 
-  nxsig_usleep(50000);
+  nxsched_usleep(50000);
 
   /* Wait for the PowerDown bit in COMMAND_REG to be cleared */
 
@@ -1424,7 +1424,7 @@ static int mfrc522_open(FAR struct file *filep)
 
   mfrc522_configspi(dev->spi);
 
-  nxsig_usleep(10000);
+  nxsched_usleep(10000);
 
   mfrc522_getfwversion(dev);
 

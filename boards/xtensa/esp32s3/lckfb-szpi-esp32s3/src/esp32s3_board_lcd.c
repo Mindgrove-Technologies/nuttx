@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <fcntl.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 #include <sys/ioctl.h>
 
@@ -44,7 +44,7 @@
 
 #include <arch/board/board.h>
 
-#include "esp32s3_gpio.h"
+#include "espressif/esp_gpio.h"
 #include "esp32s3_spi.h"
 #include "hardware/esp32s3_gpio_sigmap.h"
 

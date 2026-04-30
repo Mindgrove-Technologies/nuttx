@@ -32,13 +32,16 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <stdio.h>
 
 #include <errno.h>
 #include <nuttx/fs/fs.h>
 #include <nuttx/himem/himem.h>
 #include <arch/board/board.h>
+
+#include "espressif/esp_gpio.h"
+#include "esp32s3_start.h"
 
 #ifdef CONFIG_ESP32S3_I2C
 #  include "esp32s3_i2c.h"
@@ -49,11 +52,15 @@
 #endif
 
 #ifdef CONFIG_RTC_DRIVER
-#  include "esp32s3_rtc_lowerhalf.h"
+#  include "espressif/esp_rtc.h"
 #endif
 
-#ifdef CONFIG_ESP32S3_EFUSE
-#  include "esp32s3_efuse.h"
+#ifdef CONFIG_ESPRESSIF_HR_TIMER
+#  include "espressif/esp_hr_timer.h"
+#endif
+
+#ifdef CONFIG_ESPRESSIF_EFUSE
+#  include "espressif/esp_efuse.h"
 #endif
 
 #ifdef CONFIG_ESP32S3_PARTITION_TABLE
@@ -109,6 +116,14 @@ int esp32s3_bringup(void)
 {
   int ret;
 
+#ifdef CONFIG_ESPRESSIF_HR_TIMER
+  ret = esp_hr_timer_init();
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: esp_hr_timer_init() failed: %d\n", ret);
+    }
+#endif
+
 #if defined(CONFIG_ESP32S3_SPIRAM) && \
     defined(CONFIG_ESP32S3_SPIRAM_BANKSWITCH_ENABLE)
   ret = esp_himem_init();
@@ -144,8 +159,8 @@ int esp32s3_bringup(void)
   #endif /* CONFIG_ESPRESSIF_SPI_BITBANG */
 #endif /* CONFIG_ESP32S3_SPI && CONFIG_SPI_DRIVER*/
 
-#if defined(CONFIG_ESP32S3_EFUSE)
-  ret = esp32s3_efuse_initialize("/dev/efuse");
+#if defined(CONFIG_ESPRESSIF_EFUSE)
+  ret = esp_efuse_initialize("/dev/efuse");
   if (ret < 0)
     {
       syslog(LOG_ERR, "ERROR: Failed to init EFUSE: %d\n", ret);
@@ -195,7 +210,7 @@ int esp32s3_bringup(void)
 #ifdef CONFIG_RTC_DRIVER
   /* Instantiate the ESP32-S3 RTC driver */
 
-  ret = esp32s3_rtc_driverinit();
+  ret = esp_rtc_driverinit();
   if (ret < 0)
     {
       syslog(LOG_ERR,

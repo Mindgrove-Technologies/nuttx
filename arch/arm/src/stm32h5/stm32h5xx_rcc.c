@@ -28,6 +28,8 @@
 #include <arch/stm32h5/chip.h>
 #include <arch/board/board.h>
 
+#include <assert.h>
+
 #include "stm32_pwr.h"
 #include "stm32_flash.h"
 #include "stm32_rcc.h"
@@ -36,6 +38,9 @@
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
+
+static_assert(CONFIG_BOARD_LOOPSPERMSEC != -1,
+              "Configure BOARD_LOOPSPERMSEC to non-default value.");
 
 /* Allow up to 100 milliseconds for the high speed clock to become ready.
  * that is a very long delay, but if the clock does not become ready we are
@@ -58,8 +63,15 @@
 /* Determine if board wants to use HSI48 as 48 MHz oscillator. */
 
 #if defined(CONFIG_STM32H5_HAVE_HSI48) && defined(STM32H5_USE_CLK48)
-#  if STM32H5_CLKUSB_SEL == RCC_CCIPR4_USBSEL_HSI48KERCK
-#    define STM32H5_USE_HSI48 1
+#  if defined(STM32H5_CLKUSB_SEL)
+#    if (STM32H5_CLKUSB_SEL == RCC_CCIPR4_USBSEL_HSI48KERCK)
+#      define STM32H5_USE_HSI48 1
+#    endif
+#  endif
+#  if defined(STM32H5_CLKRNG_SEL)
+#    if (STM32H5_CLKRNG_SEL == RCC_CCIPR5_RNGSEL_HSI48KERCK)
+#      define STM32H5_USE_HSI48 1
+#    endif
 #  endif
 #endif
 
@@ -89,13 +101,13 @@ static inline void rcc_enableahb1(void)
 
   regval = getreg32(STM32_RCC_AHB1ENR);
 
-#ifdef CONFIG_STM32H5_GPDMA1
+#ifdef CONFIG_STM32H5_DMA1
   /* DMA 1 clock enable */
 
   regval |= RCC_AHB1ENR_GPDMA1EN;
 #endif
 
-#ifdef CONFIG_STM32H5_GPDMA2
+#ifdef CONFIG_STM32H5_DMA2
   /* DMA 2 clock enable */
 
   regval |= RCC_AHB1ENR_GPDMA2EN;
@@ -568,7 +580,7 @@ static inline void rcc_enableapb2(void)
   regval |= RCC_APB2ENR_SAI2EN;
 #endif
 
-#ifdef CONFIG_STM32H5_USBFS
+#if defined(CONFIG_STM32H5_USBFS) || defined(CONFIG_STM32H5_USBFS_HOST)
   /* USB clock enable */
 
   regval |= RCC_APB2ENR_USBEN;
@@ -1119,6 +1131,13 @@ void stm32_stdclockconfig(void)
       putreg32(regval, STM32_RCC_CCIPR5);
 #endif
 
+      /* Configure FDCAN source clock */
+#if defined(STM32_RCC_CCIPR5_FDCANSEL)
+      regval = getreg32(STM32_RCC_CCIPR5);
+      regval &= ~RCC_CCIPR5_FDCANSEL_MASK;
+      regval |= STM32_RCC_CCIPR5_FDCANSEL;
+      putreg32(regval, STM32_RCC_CCIPR5);
+#endif
       /* Configure OCTOSPI1 source clock */
 
 #if defined(STM32_RCC_CCIPR4_OCTOSPI1SEL)
@@ -1182,11 +1201,22 @@ void stm32_stdclockconfig(void)
       putreg32(regval, STM32_RCC_CCIPR3);
 #endif
 
+      /* Configure USB source clock */
+
 #if defined(STM32H5_CLKUSB_SEL)
       regval = getreg32(STM32_RCC_CCIPR4);
       regval &= ~RCC_CCIPR4_USBSEL_MASK;
       regval |= STM32H5_CLKUSB_SEL;
       putreg32(regval, STM32_RCC_CCIPR4);
+#endif
+
+      /* Configure RNG source clock */
+
+#if defined(STM32H5_CLKRNG_SEL)
+      regval = getreg32(STM32_RCC_CCIPR5);
+      regval &= ~RCC_CCIPR5_RNGSEL_MASK;
+      regval |= STM32H5_CLKRNG_SEL;
+      putreg32(regval, STM32_RCC_CCIPR5);
 #endif
     }
 }

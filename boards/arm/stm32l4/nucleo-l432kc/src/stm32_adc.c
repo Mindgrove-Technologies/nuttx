@@ -27,7 +27,7 @@
 #include <nuttx/config.h>
 
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <nuttx/board.h>
 #include <nuttx/analog/adc.h>
@@ -69,7 +69,7 @@ static const uint8_t  g_adc1_chanlist[ADC1_NCHANNELS] =
 
 static const uint32_t g_adc1_pinlist[ADC1_NCHANNELS]  =
 {
-  GPIO_ADC1_IN11, GPIO_ADC1_IN12
+  GPIO_ADC1_IN11_0, GPIO_ADC1_IN12_0
 };
 
 #else
@@ -84,7 +84,7 @@ static const uint8_t  g_adc1_chanlist[ADC1_NCHANNELS] =
 
 static const uint32_t g_adc1_pinlist[ADC1_NCHANNELS]  =
 {
-  GPIO_ADC1_IN11
+  GPIO_ADC1_IN11_0
 };
 
 #endif /* CONFIG_STM32L4_ADC1_DMA */

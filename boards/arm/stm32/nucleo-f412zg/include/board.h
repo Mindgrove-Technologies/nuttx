@@ -125,6 +125,14 @@
 #  define GPIO_USART2_RX GPIO_USART2_RX_2
 #  define GPIO_USART2_TX GPIO_USART2_TX_2
 
+/* USART3 (ST-LINK Virtual COM Port):
+ *  RXD: PD9
+ *  TXD: PD8
+ */
+
+#  define GPIO_USART3_RX GPIO_USART3_RX_3
+#  define GPIO_USART3_TX GPIO_USART3_TX_3
+
 /* USART6:
  *  RXD: PG9    CN10 pin 16
  *  TXD: PG14   CN10 pin 14
@@ -201,7 +209,7 @@ GPIO_SPEED_50MHz)
  *   LED_SIGNAL           In a signal handler
  *   LED_ASSERTION        An assertion failed
  *   LED_PANIC            The system has crashed
- *   LED_IDLE             MCU is is sleep mode
+ *   LED_IDLE             MCU is in sleep mode
  *
  * Thus if LD2, NuttX has successfully booted and is, apparently, running
  * normally.  If LD2 is flashing at approximately 2Hz, then a fatal error

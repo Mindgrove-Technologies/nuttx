@@ -30,13 +30,12 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
 
+#include <nuttx/debug.h>
 #include <nuttx/irq.h>
 #include <nuttx/clock.h>
 #include <nuttx/spinlock.h>
 
-#include "esp32_clockconfig.h"
 #include "esp32_freerun.h"
 
 #ifdef CONFIG_ESP32_FREERUN

@@ -160,7 +160,7 @@
  * | LED_SIGNAL         | In a signal handler     | No change  |
  * | LED_ASSERTION      | An assertion failed     | No change  |
  * | LED_PANIC          | The system has crashed  | 0 B 0 0    |
- * | LED_IDLE           | STM32 is is sleep mode  | Not used   |
+ * | LED_IDLE           | STM32 is in sleep mode  | Not used   |
  * |--------------------|-------------------------|------------|
  *
  * LED states legend:
@@ -245,5 +245,12 @@
 /* DMA channels *************************************************************/
 
 #endif /* CONFIG_EXAMPLES_SMPS */
+
+/* HRTIM */
+
+#define GPIO_HRTIM1_CHC1   GPIO_HRTIM1_CHC1_0
+#define GPIO_HRTIM1_CHC2   GPIO_HRTIM1_CHC2_0
+#define GPIO_HRTIM1_CHD1   GPIO_HRTIM1_CHD1_0
+#define GPIO_HRTIM1_CHD2   GPIO_HRTIM1_CHD2_0
 
 #endif /* __BOARDS_ARM_STM32_B_G474E_DPOW1_INCLUDE_BOARD_H */

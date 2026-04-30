@@ -30,7 +30,7 @@
 #include <time.h>
 #include <string.h>
 #include <assert.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 
 #include <sys/param.h>
@@ -78,10 +78,6 @@
  ****************************************************************************/
 
 /* Configuration ************************************************************/
-
-/* See boards/arm/stm32/stm3240g-eval/README.txt for an explanation of the
- * configuration settings.
- */
 
 #if STM32H5_NETHERNET > 1
 #  error "Logic to support multiple Ethernet interfaces is incomplete"
@@ -847,7 +843,7 @@ static uint32_t stm32_getreg(uint32_t addr)
 
   /* Show the register value read */
 
-  ninfo("%08x->%08x\n", addr, val);
+  ninfo("%08" PRIx32 "->%08" PRIx32 "\n", addr, val);
   return val;
 }
 #endif
@@ -874,7 +870,7 @@ static void stm32_putreg(uint32_t val, uint32_t addr)
 {
   /* Show the register value being written */
 
-  ninfo("%08x<-%08x\n", addr, val);
+  ninfo("%08" PRIx32 "<-%08" PRIx32 "\n", addr, val);
 
   /* Write the value */
 
@@ -3379,7 +3375,7 @@ static int stm32_phyinit(struct stm32_ethmac_s *priv)
           break;
         }
 
-      nxsig_usleep(100);
+      nxsched_usleep(100);
     }
 
   if (timeout >= PHY_RETRY_TIMEOUT)
@@ -3413,7 +3409,7 @@ static int stm32_phyinit(struct stm32_ethmac_s *priv)
           break;
         }
 
-      nxsig_usleep(100);
+      nxsched_usleep(100);
     }
 
   if (timeout >= PHY_RETRY_TIMEOUT)

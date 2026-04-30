@@ -346,6 +346,16 @@ extern "C"
 
 #define GPIO_RFID_CS      (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_50MHz|\
                            GPIO_OUTPUT_SET|GPIO_PORTC|GPIO_PIN5)
+
+/* MAX31855 */
+
+#define GPIO_MAX31855_CS   (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_50MHz|\
+                           GPIO_OUTPUT_SET|GPIO_PORTC|GPIO_PIN4)
+
+/* MAX6675 */
+
+#define GPIO_MAX6675_CS    (GPIO_OUTPUT|GPIO_PUSHPULL|GPIO_SPEED_50MHz|\
+                           GPIO_OUTPUT_SET|GPIO_PORTC|GPIO_PIN5)
 /* LEDs
  *
  * The STM32F401RC-RS485 boards provide 4 blue user LEDs. LD1, LD2, LD3
@@ -384,7 +394,7 @@ extern "C"
  *   LED_SIGNAL           In a signal handler        No change
  *   LED_ASSERTION        An assertion failed        No change
  *   LED_PANIC            The system has crashed     Blinking
- *   LED_IDLE             MCU is is sleep mode       Not used
+ *   LED_IDLE             MCU is in sleep mode       Not used
  *
  * Thus if LD2, NuttX has successfully booted and is, apparently, running
  * normally.  If LD2 is flashing at approximately 2Hz, then a fatal error

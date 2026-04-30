@@ -21,7 +21,16 @@
 ############################################################################
 
 include $(TOPDIR)/tools/Make.defs
+
+# Allow cleanup targets to run even if the configured chip dirlink is gone.
+CLEAN_GOALS = clean distclean
+ifeq ($(strip $(MAKECMDGOALS)),)
 include chip/Make.defs
+else ifeq ($(strip $(filter-out $(CLEAN_GOALS),$(MAKECMDGOALS))),)
+-include chip/Make.defs
+else
+include chip/Make.defs
+endif
 
 ifeq ($(CONFIG_ARCH_ARMV7A),y)          # ARMv7-A
 ARCH_SUBDIR = armv7-a
@@ -135,7 +144,7 @@ else
 endif
 
 ARCHSCRIPT := $(call CONVERT_PATH,$(ARCHSCRIPT))
-LDFLAGS += $(addprefix $(SCRIPT_OPT) ,$(addsuffix .tmp,$(ARCHSCRIPT))) $(EXTRALINKCMDS)
+LDFLAGS += $(addprefix $(SCRIPT_OPT),$(addsuffix .tmp,$(ARCHSCRIPT))) $(EXTRALINKCMDS)
 LIBPATHS += $(LIBPATH_OPT) $(call CONVERT_PATH,$(TOPDIR)$(DELIM)staging)
 
 BOARDMAKE = $(if $(wildcard board$(DELIM)Makefile),y,)
@@ -282,6 +291,7 @@ distclean:: clean
 ifeq ($(BOARDMAKE),y)
 	$(Q) $(MAKE) -C board distclean
 endif
+	$(call DELFILE, $(CSRCS:.c=.ddc) $(ASRCS:.S=.dds) $(HEAD_ASRC:.S=.dds))
 	$(call DELFILE, Make.dep)
 	$(call DELFILE, .depend)
 

@@ -1019,26 +1019,6 @@ config STM32L4_SRAM3_HEAP
 		NOTE: you must also select an appropriate number of memory regions in the
 		'Memory Management' section.
 
-config STM32L4_USE_LEGACY_PINMAP
-	bool "Use the legacy pinmap with GPIO_SPEED_xxx included."
-	default y
-	---help---
-		In the past, pinmap files included GPIO_SPEED_xxxMhz. These speed
-		settings should have come from the board.h as it describes the wiring
-		of the SoC to the board. The speed is really slew rate control and
-		therefore is related to the layout and can only be properly set
-		in board.h.
-
-		STM32L4_USE_LEGACY_PINMAP is provided, to allow lazy migration to
-		using pinmaps without speeds. The work required to do this can be aided
-		by running tools/stm32_pinmap_tool.py. The tools will take a board.h
-		file and a legacy pinmap and output the required changes that one needs
-		to make to a board.h file.
-
-		Eventually, STM32L4_USE_LEGACY_PINMAP will be deprecated and the legacy
-		pinmaps removed from NuttX. Any new boards added should set
-		STM32L4_USE_LEGACY_PINMAP=n and fully define the pins in board.h
-
 comment "STM32L4 Peripherals"
 
 menu "STM32L4 Peripheral Support"
@@ -6212,7 +6192,6 @@ config STM32L4_TIM1_QEPSC
 	default 1
 	---help---
 		This prescaler divides the number of recorded encoder pulses, limiting the count rate at the expense of resolution.
-		Replaces the obscure "output clock of TIM1." (CONFIG_TIM1_QECLKOUT).
 
 endif
 
@@ -6230,7 +6209,6 @@ config STM32L4_TIM2_QEPSC
 	default 1
 	---help---
 		This prescaler divides the number of recorded encoder pulses, limiting the count rate at the expense of resolution.
-		Replaces the obscure "output clock of TIM2." (CONFIG_TIM2_QECLKOUT).
 
 endif
 
@@ -6248,7 +6226,6 @@ config STM32L4_TIM3_QEPSC
 	default 1
 	---help---
 		This prescaler divides the number of recorded encoder pulses, limiting the count rate at the expense of resolution.
-		Replaces the obscure "output clock of TIM3." (CONFIG_TIM3_QECLKOUT).
 
 endif
 
@@ -6266,7 +6243,6 @@ config STM32L4_TIM4_QEPSC
 	default 1
 	---help---
 		This prescaler divides the number of recorded encoder pulses, limiting the count rate at the expense of resolution.
-		Replaces the obscure "output clock of TIM4." (CONFIG_TIM4_QECLKOUT).
 
 endif
 
@@ -6284,7 +6260,6 @@ config STM32L4_TIM5_QEPSC
 	default 1
 	---help---
 		This prescaler divides the number of recorded encoder pulses, limiting the count rate at the expense of resolution.
-		Replaces the obscure "output clock of TIM5." (CONFIG_TIM5_QECLKOUT).
 
 endif
 
@@ -6302,7 +6277,6 @@ config STM32L4_TIM8_QEPSC
 	default 1
 	---help---
 		This prescaler divides the number of recorded encoder pulses, limiting the count rate at the expense of resolution.
-		Replaces the obscure "output clock of TIM8." (CONFIG_TIM8_QECLKOUT).
 
 endif
 

@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <nuttx/board.h>
 #include <nuttx/signal.h>
@@ -113,7 +113,7 @@ static int stm32_i2c_power_reset(struct hyt271_bus_s *bus)
     }
 
   stm32_gpiowrite(BOARD_HYT271_POWOUT, false);
-  nxsig_usleep(250000);
+  nxsched_usleep(250000);
   stm32_gpiowrite(BOARD_HYT271_POWOUT, true);
 
   while (1)

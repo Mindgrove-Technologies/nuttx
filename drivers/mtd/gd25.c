@@ -35,7 +35,7 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <nuttx/arch.h>
 #include <nuttx/kmalloc.h>
@@ -403,7 +403,7 @@ static uint8_t gd25_waitwritecomplete(FAR struct gd25_dev_s *priv)
       if (priv->prev_instr != GD25_PP && (status & GD25_SR_WIP) != 0)
         {
           gd25_unlock(priv->spi);
-          nxsig_usleep(1000);
+          nxsched_usleep(1000);
           gd25_lock(priv->spi);
         }
     }

@@ -30,7 +30,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <time.h>
 
 #include <nuttx/irq.h>
@@ -286,10 +286,7 @@ static uint64_t cisif_get_msec_time(void)
 {
   struct timespec tp;
 
-  if (clock_systime_timespec(&tp) < 0)
-    {
-      return 0;
-    }
+  clock_systime_timespec(&tp);
 
   return (((uint64_t)tp.tv_sec) * 1000 + tp.tv_nsec / 1000000);
 }

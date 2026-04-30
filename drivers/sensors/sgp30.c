@@ -20,6 +20,19 @@
  *
  ****************************************************************************/
 
+/* WARNING for developers:
+ *
+ * This driver uses the legacy style of writing sensor drivers for NuttX. The
+ * project has since decided to adopt a new sensor framework in order to
+ * have a consistent API and feature-set.
+ *
+ * Sensors which use the uORB framework are typically suffixed "_uorb". You
+ * can also visit the documentation about the new sensor framework to learn
+ * more.
+ */
+
+#warning "This is a deprecated legacy sensor driver."
+
 /****************************************************************************
  * Included Files
  ****************************************************************************/
@@ -33,7 +46,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <time.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <nuttx/kmalloc.h>
 #include <nuttx/signal.h>
@@ -628,7 +641,7 @@ static int sgp30_open(FAR struct file *filep)
                       return ret;
                     }
 
-                  nxsig_usleep(CONFIG_SGP30_RESET_DELAY_US);
+                  nxsched_usleep(CONFIG_SGP30_RESET_DELAY_US);
 
                   clock_systime_timespec(&start);
                   ret = sgp30_write_cmd(priv, SGP30_CMD_INIT_AIR_QUALITY,

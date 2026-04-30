@@ -32,7 +32,7 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <stdio.h>
 
 #include <errno.h>
@@ -41,11 +41,14 @@
 #include <nuttx/lcd/lcd_dev.h>
 #include <arch/board/board.h>
 
+#include "espressif/esp_gpio.h"
+#include "esp32s3_start.h"
+
 #ifdef CONFIG_ESP32S3_TIMER
 #  include "esp32s3_board_tim.h"
 #endif
 
-#ifdef CONFIG_ESPRESSIF_WLAN
+#ifdef CONFIG_ESPRESSIF_WIFI
 #  include "esp32s3_board_wlan.h"
 #endif
 
@@ -55,10 +58,6 @@
 
 #ifdef CONFIG_ESPRESSIF_WIFI_BT_COEXIST
 #  include "esp32s3_wifi_adapter.h"
-#endif
-
-#ifdef CONFIG_ESP32S3_RT_TIMER
-#  include "esp32s3_rt_timer.h"
 #endif
 
 #ifdef CONFIG_ESP32S3_I2C
@@ -74,15 +73,19 @@
 #endif
 
 #ifdef CONFIG_RTC_DRIVER
-#  include "esp32s3_rtc_lowerhalf.h"
+#  include "espressif/esp_rtc.h"
+#endif
+
+#ifdef CONFIG_ESPRESSIF_HR_TIMER
+#  include "espressif/esp_hr_timer.h"
 #endif
 
 #ifdef CONFIG_VIDEO_FB
 #include <nuttx/video/fb.h>
 #endif
 
-#ifdef CONFIG_ESP32S3_EFUSE
-#  include "esp32s3_efuse.h"
+#ifdef CONFIG_ESPRESSIF_EFUSE
+#  include "espressif/esp_efuse.h"
 #endif
 
 #ifdef CONFIG_ESPRESSIF_LEDC
@@ -109,8 +112,16 @@
 #include "esp32s3_board_sdmmc.h"
 #endif
 
-#ifdef CONFIG_ESP32S3_AES_ACCELERATOR
-#  include "esp32s3_aes.h"
+#ifdef CONFIG_ESPRESSIF_AES_ACCELERATOR
+#  include "espressif/esp_aes.h"
+#endif
+
+#ifdef CONFIG_SENSORS_QMI8658
+#  include <nuttx/sensors/qmi8658.h>
+#endif
+
+#ifdef CONFIG_ESP32S3_CAM
+#  include <nuttx/video/v4l2_cap.h>
 #endif
 
 #ifdef CONFIG_ESP32S3_ADC
@@ -153,8 +164,16 @@
 int esp32s3_bringup(void)
 {
   int ret;
-#if (defined(CONFIG_ESPRESSIF_I2S0) && !defined(CONFIG_AUDIO_CS4344)) || \
-    defined(CONFIG_ESPRESSIF_I2S1)
+
+#ifdef CONFIG_ESPRESSIF_HR_TIMER
+  ret = esp_hr_timer_init();
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: esp_hr_timer_init() failed: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_ESPRESSIF_I2S1
   bool i2s_enable_tx;
   bool i2s_enable_rx;
 #endif
@@ -194,8 +213,8 @@ int esp32s3_bringup(void)
   #endif /* CONFIG_ESPRESSIF_SPI_BITBANG */
 #endif /* CONFIG_ESP32S3_SPI && CONFIG_SPI_DRIVER*/
 
-#if defined(CONFIG_ESP32S3_EFUSE)
-  ret = esp32s3_efuse_initialize("/dev/efuse");
+#if defined(CONFIG_ESPRESSIF_EFUSE)
+  ret = esp_efuse_initialize("/dev/efuse");
   if (ret < 0)
     {
       syslog(LOG_ERR, "ERROR: Failed to init EFUSE: %d\n", ret);
@@ -258,14 +277,6 @@ int esp32s3_bringup(void)
     }
 #endif
 
-#ifdef CONFIG_ESP32S3_RT_TIMER
-  ret = esp32s3_rt_timer_init();
-  if (ret < 0)
-    {
-      syslog(LOG_ERR, "Failed to initialize RT timer: %d\n", ret);
-    }
-#endif
-
 #ifdef CONFIG_ESPRESSIF_TEMP
   struct esp_temp_sensor_config_t cfg = TEMPERATURE_SENSOR_CONFIG(10, 50);
   ret = esp_temperature_sensor_initialize(cfg);
@@ -279,7 +290,7 @@ int esp32s3_bringup(void)
 #ifdef CONFIG_RTC_DRIVER
   /* Instantiate the ESP32-S3 RTC driver */
 
-  ret = esp32s3_rtc_driverinit();
+  ret = esp_rtc_driverinit();
   if (ret < 0)
     {
       syslog(LOG_ERR,
@@ -307,6 +318,16 @@ int esp32s3_bringup(void)
     }
 #endif
 
+#ifdef CONFIG_SENSORS_QMI8658
+  /* Register QMI8658 IMU sensor */
+
+  ret = esp32s3_qmi8658_initialize();
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: Failed to register QMI8658 IMU: %d\n", ret);
+    }
+#endif
+
 #ifdef CONFIG_IOEXPANDER_PCA9557
   ret = esp32s3_pca9557_initialize();
   if (ret < 0)
@@ -323,50 +344,21 @@ int esp32s3_bringup(void)
     }
 #endif
 
-#ifdef CONFIG_SENSORS_BMP180
-  /* Try to register BMP180 device in I2C0 */
-
-  ret = board_bmp180_initialize(0, ESP32S3_I2C0);
-  if (ret < 0)
-    {
-      syslog(LOG_ERR,
-             "Failed to initialize BMP180 driver for I2C0: %d\n", ret);
-    }
-#endif
-
 #ifdef CONFIG_ESPRESSIF_I2S
 
-#ifdef CONFIG_AUDIO_CS4344
+  /* On lckfb-szpi-esp32s3, I2S0 is wired to dedicated codec chips
+   * (ES7210 ADC + ES8311 DAC) which register their own audio devices.
+   * Generic audio_i2s is not used on I2S0 — skip board_i2sdev_initialize
+   * for port 0.
+   */
 
-  /* Configure CS4344 audio on I2S0 */
-
-  ret = esp32s3_cs4344_initialize(ESP32S3_I2S0);
-  if (ret != OK)
-    {
-      syslog(LOG_ERR, "Failed to initialize CS4344 audio: %d\n", ret);
-    }
-#else
-
-#ifdef CONFIG_ESPRESSIF_I2S0_TX
-  i2s_enable_tx = true;
-#else
-  i2s_enable_tx = false;
-#endif /* CONFIG_ESPRESSIF_I2S0_TX */
-
-#ifdef CONFIG_ESPRESSIF_I2S0_RX
-  i2s_enable_rx = true;
-#else
-  i2s_enable_rx = false;
-#endif /* CONFIG_ESPRESSIF_I2S0_RX */
-
-  /* Configure I2S generic audio on I2S0 */
-
-  ret = board_i2sdev_initialize(ESP32S3_I2S0, i2s_enable_tx, i2s_enable_rx);
+#ifdef CONFIG_AUDIO_ES7210
+  ret = esp32s3_es7210_initialize(0, 0);
   if (ret < 0)
     {
-      syslog(LOG_ERR, "Failed to initialize I2S0 driver: %d\n", ret);
+      syslog(LOG_ERR, "ERROR: Failed to initialize ES7210: %d\n", ret);
     }
-#endif /* CONFIG_AUDIO_CS4344 */
+#endif
 
 #ifdef CONFIG_ESPRESSIF_I2S1
 
@@ -413,7 +405,7 @@ int esp32s3_bringup(void)
     }
 #endif
 
-#ifdef CONFIG_ESPRESSIF_WLAN
+#ifdef CONFIG_ESPRESSIF_WIFI
   ret = board_wlan_init();
   if (ret < 0)
     {
@@ -467,8 +459,16 @@ int esp32s3_bringup(void)
     }
 #endif
 
-#ifdef CONFIG_ESP32S3_AES_ACCELERATOR
-  ret = esp32s3_aes_init();
+#ifdef CONFIG_ESP32S3_CAM
+  ret = esp32s3_camera_initialize();
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: Failed to initialize camera: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_ESPRESSIF_AES_ACCELERATOR
+  ret = esp_aes_init();
   if (ret < 0)
     {
       syslog(LOG_ERR, "ERROR: Failed to initialize AES: %d\n", ret);
@@ -476,7 +476,7 @@ int esp32s3_bringup(void)
 #ifdef CONFIG_ESP32S3_AES_ACCELERATOR_TEST
   else
     {
-      esp32s3_aes_test();
+      esp_aes_test();
     }
 #endif
 #endif

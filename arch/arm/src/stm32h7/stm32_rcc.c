@@ -29,7 +29,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <assert.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <arch/board/board.h>
 
@@ -42,6 +42,9 @@
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
+
+static_assert(CONFIG_BOARD_LOOPSPERMSEC != -1,
+              "Configure BOARD_LOOPSPERMSEC to non-default value.");
 
 /* Allow up to 100 milliseconds for the high speed clock to become ready.
  * that is a very long delay, but if the clock does not become ready we are
@@ -56,7 +59,9 @@
 
 /* Include chip-specific clocking initialization logic */
 
-#if defined(CONFIG_STM32H7_STM32H7X3XX)
+#if defined(CONFIG_STM32H7_STM32H7X0XX)
+#  include "stm32h7x3xx_rcc.c"
+#elif defined(CONFIG_STM32H7_STM32H7X3XX)
 #  include "stm32h7x3xx_rcc.c"
 #elif defined(CONFIG_STM32H7_STM32H7B3XX)
 #  include "stm32h7x3xx_rcc.c"

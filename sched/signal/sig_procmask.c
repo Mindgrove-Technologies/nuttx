@@ -32,8 +32,8 @@
 #include <sched.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
 
+#include <nuttx/debug.h>
 #include <nuttx/irq.h>
 #include <nuttx/arch.h>
 #include <nuttx/wdog.h>
@@ -145,7 +145,9 @@ int nxsig_procmask(int how, FAR const sigset_t *set, FAR sigset_t *oset)
 
       /* Now, process any pending signals that were just unmasked */
 
+#ifdef CONFIG_ENABLE_ALL_SIGNALS
       nxsig_unmask_pendingsignal();
+#endif
     }
 
   return ret;

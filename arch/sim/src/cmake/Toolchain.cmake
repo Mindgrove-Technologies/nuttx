@@ -20,13 +20,19 @@
 #
 # ##############################################################################
 
-if(APPLE)
+if(APPLE AND CONFIG_SIM_TOOLCHAIN_GCC)
   find_program(CMAKE_C_ELF_COMPILER x86_64-elf-gcc)
   find_program(CMAKE_CXX_ELF_COMPILER x86_64-elf-g++)
 endif()
 
 if(WIN32)
   return()
+endif()
+
+if(CONFIG_HOST_LINUX)
+  set(CMAKE_LD ld)
+  set(CMAKE_PREPROCESSOR cc -E -P -x c)
+  set(CMAKE_STRIP strip --strip-unneeded)
 endif()
 
 # LLVM style architecture flags
@@ -103,7 +109,7 @@ else()
 endif()
 
 if(CONFIG_STACK_CANARIES)
-  add_compile_options(-fstack-protector-all)
+  add_compile_options(${CONFIG_STACK_CANARIES_LEVEL})
 endif()
 
 if(CONFIG_STACK_USAGE)
@@ -115,7 +121,12 @@ if(CONFIG_STACK_USAGE_WARNING)
 endif()
 
 if(CONFIG_COVERAGE_ALL)
-  add_compile_options(-fprofile-arcs -ftest-coverage -fno-inline)
+  if(CONFIG_ARCH_TOOLCHAIN_GCC)
+    add_compile_options(-fprofile-arcs -ftest-coverage -fno-inline)
+  elseif(CONFIG_ARCH_TOOLCHAIN_CLANG)
+    add_compile_options(-fprofile-instr-generate -fcoverage-mapping)
+    add_link_options(-fprofile-instr-generate)
+  endif()
 endif()
 
 if(CONFIG_PROFILE_ALL OR CONFIG_SIM_PROFILE)
@@ -218,6 +229,10 @@ if(CONFIG_LIBCXX)
   endif()
   add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-D__GLIBCXX__>)
   add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-D_LIBCPP_DISABLE_AVAILABILITY>)
+endif()
+
+if(CONFIG_LIBCXX_TEST)
+  add_link_options(-Wl,-latomic)
 endif()
 
 if(APPLE)

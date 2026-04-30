@@ -28,13 +28,14 @@
 
 #include <arch/irq.h>
 
+#include <nuttx/arch.h>
 #include <nuttx/mutex.h>
 #include <nuttx/semaphore.h>
 #include <nuttx/signal.h>
 
 #include <nuttx/mm/mm.h>
 
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -389,7 +390,7 @@ int nrf_modem_os_sleep(uint32_t timeout)
 {
   /* Timeout in ms */
 
-  nxsig_usleep(timeout * 1000);
+  nxsched_usleep(timeout * 1000);
   return OK;
 }
 

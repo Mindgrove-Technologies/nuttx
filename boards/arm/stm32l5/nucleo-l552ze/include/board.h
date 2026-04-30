@@ -173,6 +173,11 @@
 #define GPIO_USART3_RX   GPIO_USART3_RX_4    /* PD9 */
 #define GPIO_USART3_TX   GPIO_USART3_TX_4    /* PD8 */
 
+/* LPUART1: Connected to STLink VCP by default on Nucleo-L552ZE-Q */
+
+#define GPIO_LPUART1_RX  GPIO_LPUART1_RX_4   /* PG8 */
+#define GPIO_LPUART1_TX  GPIO_LPUART1_TX_4   /* PG7 */
+
 /* LED definitions **********************************************************/
 
 /* The Nucleo-144 board has numerous LEDs but only three, LD1 a Green LED,
@@ -218,7 +223,7 @@
 #define LED_SIGNAL         5 /* In a signal handler      N/C    GLOW  N/C  */
 #define LED_ASSERTION      6 /* An assertion failed      GLOW   N/C   GLOW */
 #define LED_PANIC          7 /* The system has crashed   Blink  OFF   N/C  */
-#define LED_IDLE           8 /* MCU is is sleep mode     ON     OFF   OFF  */
+#define LED_IDLE           8 /* MCU is in sleep mode     ON     OFF   OFF  */
 
 /* Thus if the Green LED is statically on, NuttX has successfully booted and
  * is, apparently, running normally.  If the Red LED is flashing at

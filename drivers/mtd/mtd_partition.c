@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <assert.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <string.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -901,7 +901,7 @@ FAR struct mtd_dev_s *mtd_partition(FAR struct mtd_dev_s *mtd,
    * nullified by kmm_zalloc).
    */
 
-  part->child.erase   = part_erase;
+  part->child.erase   = mtd->erase ? part_erase : NULL;
   part->child.bread   = part_bread;
   part->child.bwrite  = part_bwrite;
   part->child.read    = mtd->read ? part_read : NULL;

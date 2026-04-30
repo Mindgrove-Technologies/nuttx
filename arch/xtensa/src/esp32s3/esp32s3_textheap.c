@@ -28,7 +28,8 @@
 #include <nuttx/mm/mm.h>
 
 #include <sys/types.h>
-#include <debug.h>
+
+#include <nuttx/debug.h>
 #include <nuttx/kmalloc.h>
 
 #include "hal/cache_hal.h"
@@ -87,7 +88,7 @@ void *up_textheap_memalign(size_t align, size_t size)
 
   if (ret == NULL)
     {
-      ret = kmm_memalign(align, size);
+      ret = memalign(align, size);
       if (ret)
         {
           /* kmm_memalign buffer is at the Data bus offset.  Adjust it so we
@@ -137,7 +138,7 @@ void up_textheap_free(void *p)
 #endif
         {
           p = up_textheap_data_address(p);
-          kmm_free(p);
+          free(p);
         }
     }
 }
@@ -171,7 +172,7 @@ bool up_textheap_heapmember(void *p)
 #endif
 
   p = up_textheap_data_address(p);
-  return kmm_heapmember(p);
+  return umm_heapmember(p);
 }
 
 /****************************************************************************

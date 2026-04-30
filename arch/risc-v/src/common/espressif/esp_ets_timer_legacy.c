@@ -31,13 +31,12 @@
  ****************************************************************************/
 
 #include <assert.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 #include <string.h>
 #include <stdbool.h>
 
 #include "sdkconfig.h"
-#include "esp_timer.h"
 #include "rom/ets_sys.h"
 #include "esp_attr.h"
 
@@ -134,6 +133,8 @@ void ets_timer_setfn(ets_timer *ptimer,
 
       hr_timer_args.arg      = parg;
       hr_timer_args.callback = pfunction;
+      hr_timer_args.name     = "ets_timer";
+      hr_timer_args.skip_unhandled_events = false;
 
       ret = esp_hr_timer_create(&hr_timer_args, &hr_timers_p);
 

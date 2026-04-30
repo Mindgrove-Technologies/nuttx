@@ -34,8 +34,8 @@
 #include <errno.h>
 #include <mqueue.h>
 #include <sched.h>
-#include <debug.h>
 
+#include <nuttx/debug.h>
 #include <nuttx/irq.h>
 #include <nuttx/arch.h>
 #include <nuttx/cancelpt.h>
@@ -267,7 +267,7 @@ void nxmq_notify_receive(FAR struct mqueue_inode_s *msgq)
 
       if (nxsched_add_readytorun(btcb))
         {
-          up_switch_context(btcb, rtcb);
+          up_switch_context(this_task(), rtcb);
         }
     }
 }

@@ -33,8 +33,8 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
 
+#include <nuttx/debug.h>
 #include <nuttx/irq.h>
 #include <nuttx/arch.h>
 #include <nuttx/fs/ioctl.h>
@@ -2382,6 +2382,9 @@ static void up_dma_shutdown(struct uart_dev_s *dev)
 
       stm32_dmafree(priv->txdma);
       priv->txdma = NULL;
+
+      dev->dmatx.length = 0;
+      dev->dmatx.nlength = 0;
     }
 #endif
 }
@@ -2393,7 +2396,7 @@ static void up_dma_shutdown(struct uart_dev_s *dev)
  * Description:
  *   Configure the USART to operation in interrupt driven mode.  This method
  *   is called when the serial port is opened.  Normally, this is just after
- *   the the setup() method is called, however, the serial console may
+ *   the setup() method is called, however, the serial console may
  *   operate in a non-interrupt driven mode during the boot phase.
  *
  *   RX and TX interrupts are not enabled when by the attach method (unless

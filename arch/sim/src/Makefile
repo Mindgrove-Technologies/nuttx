@@ -81,10 +81,14 @@ AOBJS = $(ASRCS:.S=$(OBJEXT))
 
 CSRCS  = sim_initialize.c sim_idle.c sim_doirq.c sim_initialstate.c
 CSRCS += sim_createstack.c sim_usestack.c sim_releasestack.c sim_stackframe.c
-CSRCS += sim_exit.c sim_schedulesigaction.c sim_switchcontext.c sim_heap.c
-CSRCS += sim_uart.c sim_copyfullstate.c sim_sigdeliver.c sim_tcbinfo.c sim_cpuinfo.c
+CSRCS += sim_exit.c sim_switchcontext.c sim_ummheap.c
+CSRCS += sim_uart.c sim_copyfullstate.c sim_tcbinfo.c sim_cpuinfo.c
 CSRCS += sim_registerdump.c sim_saveusercontext.c sim_sectionheap.c
 CSRCS += sim_checkhostfstypes.c
+
+ifeq ($(CONFIG_ENABLE_ALL_SIGNALS),y)
+CSRCS += sim_schedulesigaction.c sim_sigdeliver.c
+endif
 
 ifeq ($(CONFIG_SCHED_BACKTRACE),y)
 CSRCS += sim_backtrace.c
@@ -118,7 +122,7 @@ ifeq ($(CONFIG_FS_LARGEFILE),y)
 endif
 
 HOSTSRCS  = sim_hostirq.c sim_hostmemory.c sim_hostmisc.c sim_hosttime.c sim_hostuart.c
-HOSTSRCS += sim_hostfs.c
+HOSTSRCS += sim_hostfs.c sim_errno.c
 
 hostfs.h: $(TOPDIR)/include/nuttx/fs/hostfs.h
 	@echo "CP:  $<"
@@ -186,7 +190,13 @@ endif
 ifeq ($(CONFIG_SIM_X11FB),y)
   HOSTSRCS += sim_x11framebuffer.c
 ifeq ($(CONFIG_HOST_MACOS),y)
-  STDLIBS += -L/opt/X11/lib
+  ifneq ($(wildcard /opt/X11/include/X11/Xlib.h),)
+    HOSTCFLAGS += -I/opt/X11/include
+    STDLIBS += -L/opt/X11/lib
+  else ifneq ($(wildcard /usr/X11/include/X11/Xlib.h),)
+    HOSTCFLAGS += -I/usr/X11/include
+    STDLIBS += -L/usr/X11/lib
+  endif
 endif
   STDLIBS += -lX11 -lXext
 ifeq ($(CONFIG_SIM_TOUCHSCREEN),y)
@@ -209,8 +219,9 @@ ifeq ($(CONFIG_FS_FAT),y)
   STDLIBS += -lz
 endif
 
-ifneq ($(CONFIG_SIM_WIFIDEV_NUMBER),0)
+ifeq ($(CONFIG_SIM_WIFIDEV_HOST),y)
   CFLAGS += -DTOPDIR=\"$(TOPDIR)\"
+  CSRCS += sim_wifihost.c
 endif
 
 ifeq ($(CONFIG_SIM_NETDEV_TAP),y)
@@ -244,6 +255,11 @@ endif
 
 ifeq ($(CONFIG_SIM_SPI_LINUX),y)
   HOSTSRCS += sim_linuxspi.c
+endif
+
+ifeq ($(CONFIG_SIM_GPIOCHIP_LINUX),y)
+  HOSTSRCS += sim_linux_gpiochip.c
+  CSRCS += sim_gpiochip.c
 endif
 
 ifeq ($(CONFIG_SIM_USB_DEV),y)
@@ -519,6 +535,7 @@ distclean:: clean
 	$(Q) if [ -e board/Makefile ]; then \
 		$(MAKE) -C board distclean ; \
 	fi
+	$(call DELFILE, $(CSRCS:.c=.ddc) $(ASRCS:.S=.dds) $(HOSTSRCS:.c=.ddh))
 	$(call DELFILE, Make.dep)
 	$(call DELFILE, .depend)
 	$(call DELFILE, config.h)

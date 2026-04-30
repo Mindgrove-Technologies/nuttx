@@ -35,7 +35,7 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <nuttx/arch.h>
 #include <nuttx/kmalloc.h>
@@ -507,7 +507,7 @@ static struct usbhost_connection_s g_usbconn =
 #ifdef CONFIG_STM32L4_USBHOST_REGDEBUG
 static void stm32l4_printreg(uint32_t addr, uint32_t val, bool iswrite)
 {
-  lldbg("%08x%s%08x\n", addr, iswrite ? "<-" : "->", val);
+  lldbg("%08" PRIx32 "%s%08" PRIx32 "\n", addr, iswrite ? "<-" : "->", val);
 }
 #endif
 
@@ -1951,7 +1951,7 @@ static ssize_t stm32l4_in_transfer(struct stm32l4_usbhost_s *priv,
                    * Small delays could require more resolution than is
                    * provided by the system timer.  For example, if the
                    * system timer resolution is 10MS, then
-                   * nxsig_usleep(1000) will actually request a delay 20MS
+                   * nxsched_usleep(1000) will actually request a delay 20MS
                    * (due to both quantization and rounding).
                    *
                    * REVISIT: So which is better?  To ignore tiny delays and
@@ -1961,7 +1961,7 @@ static ssize_t stm32l4_in_transfer(struct stm32l4_usbhost_s *priv,
 
                   if (delay > CONFIG_USEC_PER_TICK)
                     {
-                      nxsig_usleep(delay - CONFIG_USEC_PER_TICK);
+                      nxsched_usleep(delay - CONFIG_USEC_PER_TICK);
                     }
                 }
             }
@@ -2267,7 +2267,7 @@ static ssize_t stm32l4_out_transfer(struct stm32l4_usbhost_s *priv,
            * transfer using the same buffer pointer and length.
            */
 
-          nxsig_usleep(20 * 1000);
+          nxsched_usleep(20 * 1000);
         }
       else
         {
@@ -2471,7 +2471,8 @@ static inline void stm32l4_gint_hcinisr(struct stm32l4_usbhost_s *priv,
   /* AND the two to get the set of enabled, pending HC interrupts */
 
   pending &= regval;
-  uinfo("HCINTMSK%d: %08x pending: %08x\n", chidx, regval, pending);
+  uinfo("HCINTMSK%d: %08" PRIx32 " pending: %08" PRIx32 "\n",
+        chidx, regval, pending);
 
   /* Check for a pending ACK response received/transmitted interrupt */
 
@@ -2728,7 +2729,8 @@ static inline void stm32l4_gint_hcoutisr(struct stm32l4_usbhost_s *priv,
   /* AND the two to get the set of enabled, pending HC interrupts */
 
   pending &= regval;
-  uinfo("HCINTMSK%d: %08x pending: %08x\n", chidx, regval, pending);
+  uinfo("HCINTMSK%d: %08" PRIx32 " pending: %08" PRIx32 "\n",
+        chidx, regval, pending);
 
   /* Check for a pending ACK response received/transmitted interrupt */
 
@@ -3050,7 +3052,7 @@ static inline void stm32l4_gint_rxflvlisr(struct stm32l4_usbhost_s *priv)
   /* Read and pop the next status from the Rx FIFO */
 
   grxsts = stm32l4_getreg(STM32L4_OTGFS_GRXSTSP);
-  uinfo("GRXSTS: %08x\n", grxsts);
+  uinfo("GRXSTS: %08" PRIx32 "\n", grxsts);
 
   /* Isolate the channel number/index in the status word */
 
@@ -3205,7 +3207,7 @@ static inline void stm32l4_gint_nptxfeisr(struct stm32l4_usbhost_s *priv)
 
   /* Write the next group of packets into the Tx FIFO */
 
-  uinfo("HNPTXSTS: %08x chidx: %d avail: %d buflen: %d xfrd: %d "
+  uinfo("HNPTXSTS: %08" PRIx32 " chidx: %d avail: %d buflen: %d xfrd: %d "
         "wrsize: %d\n",
         regval, chidx, avail, chan->buflen, chan->xfrd, wrsize);
 
@@ -3295,8 +3297,9 @@ static inline void stm32l4_gint_ptxfeisr(struct stm32l4_usbhost_s *priv)
 
   /* Write the next group of packets into the Tx FIFO */
 
-  uinfo("HPTXSTS: %08x chidx: %d avail: %d buflen: %d xfrd: %d wrsize: %d\n",
-           regval, chidx, avail, chan->buflen, chan->xfrd, wrsize);
+  uinfo("HPTXSTS: %08" PRIx32 " chidx: %d avail: %d"
+        " buflen: %d xfrd: %d wrsize: %d\n",
+        regval, chidx, avail, chan->buflen, chan->xfrd, wrsize);
 
   stm32l4_gint_wrpacket(priv, chan->buffer, chidx, wrsize);
 }
@@ -3961,7 +3964,7 @@ static int stm32l4_rh_enumerate(struct stm32l4_usbhost_s *priv,
    * 100ms.
    */
 
-  nxsig_usleep(100 * 1000);
+  nxsched_usleep(100 * 1000);
 
   /* Reset the host port */
 

@@ -30,7 +30,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <arch/irq.h>
 #include <arch/stm32f0l0g0/chip.h>
@@ -44,10 +44,6 @@
 #  include "hardware/stm32_syscfg.h"
 #elif defined(CONFIG_STM32F0L0G0_HAVE_IP_EXTI_V2)
 #  include "hardware/stm32_exti.h"
-#endif
-
-#if defined(CONFIG_STM32F0G0L0_USE_LEGACY_PINMAP)
-#  pragma message "CONFIG_STM32F0G0L0_USE_LEGACY_PINMAP will be deprecated migrate board.h see tools/stm32_pinmap_tool.py"
 #endif
 
 /****************************************************************************

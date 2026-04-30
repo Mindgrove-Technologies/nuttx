@@ -217,6 +217,16 @@ static const char *g_white_prefix[] =
   "ub32",    /* Ref:  include/fixedmath.h */
   "lua_",    /* Ref:  apps/interpreters/lua/lua-5.x.x/src/lua.h */
   "luaL_",   /* Ref:  apps/interpreters/lua/lua-5.x.x/src/lauxlib.h */
+  "Ba",      /* Ref:  apps/netutils/xedge/BAS/examples/xedge/src/xedge.h */
+  "Thread",  /* Ref:  apps/netutils/xedge/BAS/examples/xedge/src/xedge.h */
+  "LThread", /* Ref:  apps/netutils/xedge/BAS/examples/xedge/src/xedge.h */
+  "Http",    /* Ref:  apps/netutils/xedge/BAS/examples/xedge/src/xedge.h */
+  "Disk",    /* Ref:  apps/netutils/xedge/BAS/examples/xedge/src/xedge.h */
+  "Xedge",   /* Ref:  apps/netutils/xedge/BAS/examples/xedge/src/xedge.h */
+  "tAddr",   /* Ref:  arch/tricore/src */
+  "tClass",  /* Ref:  arch/tricore/src */
+  "tCpu",    /* Ref:  arch/tricore/src */
+  "tId",     /* Ref:  arch/tricore/src */
   NULL
 };
 
@@ -651,6 +661,19 @@ static const char *g_white_content_list[] =
   "timeMid",
   "timeHiAndVersion",
 
+  /* Ref:
+   * apps/netutils/xedge/BAS/examples/xedge/src/xedge.h
+   */
+
+  "ltMgr",
+  "Lt",
+  "setDispExit",
+  "baGetUnixTime",
+  "platformInitDiskIo",
+  "xedgeInitDiskIo",
+  "xedgeOpenAUX",
+  "baParseDate",
+
   NULL
 };
 
@@ -689,6 +712,37 @@ static const char *g_white_files[] =
    */
 
   "phy62xx/uart.c",
+
+  /* Skip Mixed case
+   * arch/arm/src/phy62xx/irq.c:194:5: error: Mixed case identifier found
+   */
+
+  "phy62xx/irq.c",
+
+  /* Skip Mixed case
+   * arch/arm/src/phy62xx/phyplus_wdt.c:61:28: error: Mixed case identifier found
+   */
+
+  "phy62xx/phyplus_wdt.c",
+
+  /* Skip Mixed case in vendor PHY62XX BLE/GPIO/timer/startup files
+   * and LPC43 SPIFI library glue.
+   */
+
+  "phy62xx/phy62xx_ble.c",
+  "phy62xx/phyplus_gpio.c",
+  "phy62xx/phyplus_tim.c",
+  "phy62xx/start.c",
+  "lpc4370-link2/src/lpc43_spifilib_init.c",
+
+  /* Skip infineon illd files
+   * Ref:
+   * arch/tricore/src/illd
+   */
+
+  "Ifx_Cfg_Ssw.c",
+  "Ifx_Cfg_Ssw.h",
+  "Ifx_Cfg.h",
   NULL
 };
 
@@ -982,7 +1036,7 @@ static int block_comment_width(char *line)
   if (strncmp(&line[b], "/***", 4) == 0 &&
       strncmp(&line[e - 2], "***", 3) == 0)
     {
-      /* Return the the length of the line up to the final '*' */
+      /* Return the length of the line up to the final '*' */
 
       return e + 1;
     }
@@ -994,7 +1048,7 @@ static int block_comment_width(char *line)
   if (strncmp(&line[b], "***", 3) == 0 &&
       strncmp(&line[e - 3], "***/", 4) == 0)
     {
-      /* Return the the length of the line up to the final '*' */
+      /* Return the length of the line up to the final '*' */
 
       return e;
     }
@@ -1006,7 +1060,7 @@ static int block_comment_width(char *line)
   if (strncmp(&line[b], "/*", 2) == 0 &&
       strncmp(&line[e - 3], "***/", 4) == 0)
     {
-      /* Return the the length of the line up to the final '*' */
+      /* Return the length of the line up to the final '*' */
 
       return e;
     }
@@ -2506,7 +2560,7 @@ int main(int argc, char **argv, char **envp)
             }
 
           /* Check if the line is blank so far.  This is only used to
-           * to verify the the closing of a block comment is on a separate
+           * to verify the closing of a block comment is on a separate
            * line.  So we also need to treat '*' as a 'blank'.
            */
 

@@ -59,6 +59,10 @@ if(CONFIG_BUILD_PROTECTED)
   list(APPEND SRCS stm32_userspace.c)
 endif()
 
+if(CONFIG_STM32F0L0G0_PROGMEM)
+  list(APPEND SRCS stm32_flash.c)
+endif()
+
 if(CONFIG_STM32F0L0G0_GPIOIRQ)
   list(APPEND SRCS stm32_gpioint.c)
 endif()
@@ -118,6 +122,10 @@ if(CONFIG_STM32F0L0G0_FDCAN)
   if(CONFIG_STM32F0L0G0_FDCAN_SOCKET)
     list(APPEND SRCS stm32_fdcan_sock.c)
   endif()
+endif()
+
+if(CONFIG_SENSORS_QENCODER)
+  list(APPEND SRCS stm32_qencoder.c)
 endif()
 
 target_sources(arch PRIVATE ${SRCS})

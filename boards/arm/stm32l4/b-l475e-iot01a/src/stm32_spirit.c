@@ -31,7 +31,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <nuttx/arch.h>
 #include <nuttx/signal.h>
@@ -135,7 +135,7 @@ static int stm32l4_reset(const struct spirit_lower_s *lower)
 
   /* Wait minimum 1.5 ms to allow Spirit a proper boot-up sequence */
 
-  nxsig_usleep(1500);
+  nxsched_usleep(1500);
   return OK;
 }
 

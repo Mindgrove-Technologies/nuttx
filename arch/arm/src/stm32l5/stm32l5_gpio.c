@@ -30,7 +30,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <arch/irq.h>
 #include <arch/stm32l5/chip.h>
@@ -51,10 +51,6 @@ static spinlock_t g_configgpio_lock = SP_UNLOCKED;
 /****************************************************************************
  * Public Data
  ****************************************************************************/
-
-#if defined(CONFIG_STM32L5_USE_LEGACY_PINMAP)
-#  pragma message "CONFIG_STM32L5_USE_LEGACY_PINMAP will be deprecated migrate board.h see tools/stm32_pinmap_tool.py"
-#endif
 
 /* Base addresses for each GPIO block */
 

@@ -909,166 +909,207 @@ config ARCH_CHIP_STM32L073RZ
 config ARCH_CHIP_STM32C051D8
 	bool "STM32C051D8"
 	select ARCH_CHIP_STM32C051XX
+	select STM32F0L0G0_FLASH_CONFIG_8
 
 config ARCH_CHIP_STM32C051F6
 	bool "STM32C051F6"
 	select ARCH_CHIP_STM32C051XX
+	select STM32F0L0G0_FLASH_CONFIG_6
 
 config ARCH_CHIP_STM32C051F8
 	bool "STM32C051F8"
 	select ARCH_CHIP_STM32C051XX
+	select STM32F0L0G0_FLASH_CONFIG_8
 
 config ARCH_CHIP_STM32C051G6
 	bool "STM32C051G6"
 	select ARCH_CHIP_STM32C051XX
+	select STM32F0L0G0_FLASH_CONFIG_6
 
 config ARCH_CHIP_STM32C051G8
 	bool "STM32C051G8"
 	select ARCH_CHIP_STM32C051XX
+	select STM32F0L0G0_FLASH_CONFIG_8
 
 config ARCH_CHIP_STM32C051K6
 	bool "STM32C051K6"
 	select ARCH_CHIP_STM32C051XX
+	select STM32F0L0G0_FLASH_CONFIG_6
 
 config ARCH_CHIP_STM32C051K8
 	bool "STM32C051K8"
 	select ARCH_CHIP_STM32C051XX
+	select STM32F0L0G0_FLASH_CONFIG_8
 
 config ARCH_CHIP_STM32C051C6
 	bool "STM32C051C6"
 	select ARCH_CHIP_STM32C051XX
+	select STM32F0L0G0_FLASH_CONFIG_6
 
 config ARCH_CHIP_STM32C051C8
 	bool "STM32C051C8"
 	select ARCH_CHIP_STM32C051XX
+	select STM32F0L0G0_FLASH_CONFIG_8
 
 config ARCH_CHIP_STM32C071F8
 	bool "STM32C071F8"
 	select ARCH_CHIP_STM32C071XX
+	select STM32F0L0G0_FLASH_CONFIG_8
 
 config ARCH_CHIP_STM32C071FB
 	bool "STM32C071FB"
 	select ARCH_CHIP_STM32C071XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C071G8
 	bool "STM32C071G8"
 	select ARCH_CHIP_STM32C071XX
+	select STM32F0L0G0_FLASH_CONFIG_8
 
 config ARCH_CHIP_STM32C071GB
 	bool "STM32C071GB"
 	select ARCH_CHIP_STM32C071XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C071K8
 	bool "STM32C071K8"
 	select ARCH_CHIP_STM32C071XX
+	select STM32F0L0G0_FLASH_CONFIG_8
 
 config ARCH_CHIP_STM32C071KB
 	bool "STM32C071KB"
 	select ARCH_CHIP_STM32C071XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C071C8
 	bool "STM32C071C8"
 	select ARCH_CHIP_STM32C071XX
+	select STM32F0L0G0_FLASH_CONFIG_8
 
 config ARCH_CHIP_STM32C071CB
 	bool "STM32C071CB"
 	select ARCH_CHIP_STM32C071XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C071R8
 	bool "STM32C071R8"
 	select ARCH_CHIP_STM32C071XX
+	select STM32F0L0G0_FLASH_CONFIG_8
 
 config ARCH_CHIP_STM32C071RB
 	bool "STM32C071RB"
 	select ARCH_CHIP_STM32C071XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C091FB
 	bool "STM32C091FB"
 	select ARCH_CHIP_STM32C091XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C091FC
 	bool "STM32C091FC"
 	select ARCH_CHIP_STM32C091XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 config ARCH_CHIP_STM32C091EC
 	bool "STM32C091EC"
 	select ARCH_CHIP_STM32C091XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 config ARCH_CHIP_STM32C091GB
 	bool "STM32C091GB"
 	select ARCH_CHIP_STM32C091XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C091GC
 	bool "STM32C091GC"
 	select ARCH_CHIP_STM32C091XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 config ARCH_CHIP_STM32C091KB
 	bool "STM32C091KB"
 	select ARCH_CHIP_STM32C091XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C091KC
 	bool "STM32C091KC"
 	select ARCH_CHIP_STM32C091XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 config ARCH_CHIP_STM32C091CB
 	bool "STM32C091CB"
 	select ARCH_CHIP_STM32C091XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C091CC
 	bool "STM32C091CC"
 	select ARCH_CHIP_STM32C091XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 config ARCH_CHIP_STM32C091RB
 	bool "STM32C091RB"
 	select ARCH_CHIP_STM32C091XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C091RC
 	bool "STM32C091RC"
 	select ARCH_CHIP_STM32C091XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 config ARCH_CHIP_STM32C092FB
 	bool "STM32C092FB"
 	select ARCH_CHIP_STM32C092XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C092FC
 	bool "STM32C092FC"
 	select ARCH_CHIP_STM32C092XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 config ARCH_CHIP_STM32C092EC
 	bool "STM32C092EC"
 	select ARCH_CHIP_STM32C092XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 config ARCH_CHIP_STM32C092GB
 	bool "STM32C092GB"
 	select ARCH_CHIP_STM32C092XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C092GC
 	bool "STM32C092GC"
 	select ARCH_CHIP_STM32C092XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 config ARCH_CHIP_STM32C092KB
 	bool "STM32C092KB"
 	select ARCH_CHIP_STM32C092XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C092KC
 	bool "STM32C092KC"
 	select ARCH_CHIP_STM32C092XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 config ARCH_CHIP_STM32C092CB
 	bool "STM32C092CB"
 	select ARCH_CHIP_STM32C092XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C092CC
 	bool "STM32C092CC"
 	select ARCH_CHIP_STM32C092XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 config ARCH_CHIP_STM32C092RB
 	bool "STM32C092RB"
 	select ARCH_CHIP_STM32C092XX
+	select STM32F0L0G0_FLASH_CONFIG_B
 
 config ARCH_CHIP_STM32C092RC
 	bool "STM32C092RC"
 	select ARCH_CHIP_STM32C092XX
+	select STM32F0L0G0_FLASH_CONFIG_C
 
 endchoice # ST STM32F0/L0/G0/C0 Chip Selection
 
@@ -1210,6 +1251,7 @@ config STM32F0L0G0_STM32G0
 	select STM32F0L0G0_HAVE_TIM16
 	select STM32F0L0G0_HAVE_TIM17
 	select STM32F0L0G0_HAVE_I2C2
+	select ARCH_HAVE_PROGMEM
 
 config STM32F0L0G0_STM32L0
 	bool
@@ -1235,6 +1277,7 @@ config STM32F0L0G0_STM32C0
 	select STM32F0L0G0_HAVE_TIM14
 	select STM32F0L0G0_HAVE_TIM16
 	select STM32F0L0G0_HAVE_TIM17
+	select ARCH_HAVE_PROGMEM
 
 config STM32F0L0G0_STM32F03X
 	bool
@@ -1521,14 +1564,14 @@ config ARCH_CHIP_STM32C071XX
 	select STM32F0L0G0_HAVE_USBDEV
 
 config ARCH_CHIP_STM32C091XX
-	bool 
+	bool
 	select STM32F0L0G0_STM32C0
 	select STM32F0L0G0_HAVE_USART3
 	select STM32F0L0G0_HAVE_USART4
 	select STM32F0L0G0_HAVE_TIM15
 
 config ARCH_CHIP_STM32C092XX
-	bool 
+	bool
 	select STM32F0L0G0_STM32C0
 	select STM32F0L0G0_HAVE_USART3
 	select STM32F0L0G0_HAVE_USART4
@@ -1569,26 +1612,6 @@ config ARCH_BOARD_STM32F0G0L0_CUSTOM_CLOCKCONFIG
 	default n
 	---help---
 		Enables special, board-specific STM32 clock configuration.
-
-config STM32F0G0L0_USE_LEGACY_PINMAP
-	bool "Use the legacy pinmap with GPIO_SPEED_xxx included."
-	default y
-	---help---
-		In the past, pinmap files included GPIO_SPEED_xxxMhz. These speed
-		settings should have come from the board.h as it describes the wiring
-		of the SoC to the board. The speed is really slew rate control and
-		therefore is related to the layout and can only be properly set
-		in board.h.
-
-		STM32F0G0L0_USE_LEGACY_PINMAP is provided, to allow lazy migration to
-		using pinmaps without speeds. The work required to do this can be aided
-		by running tools/stm32_pinmap_tool.py. The tools will take a board.h
-		file and a legacy pinmap and output the required changes that one needs
-		to make to a board.h file.
-
-		Eventually, STM32F0G0L0_USE_LEGACY_PINMAP will be deprecated and the
-		legacy pinmaps removed from NuttX. Any new boards added should set
-		STM32F0G0L0_USE_LEGACY_PINMAP=n and fully define the pins in board.h
 
 menu "STM32 Peripheral Support"
 
@@ -2343,6 +2366,13 @@ endif # !STM32F0L0G0_PWM_MULTICHAN
 
 endif # STM32F0L0G0_TIM1_PWM
 
+config STM32F0L0G0_TIM1_QE
+	bool "TIM1 Quadrature Encoder"
+	default n
+	depends on STM32F0L0G0_TIM1
+	---help---
+		Reserve TIM1 for use by Quadrature Encoder.
+
 config STM32F0L0G0_TIM2_PWM
 	bool "TIM2 PWM"
 	default n
@@ -2497,6 +2527,13 @@ endif # !STM32F0L0G0_PWM_MULTICHAN
 
 endif # STM32F0L0G0_TIM2_PWM
 
+config STM32F0L0G0_TIM2_QE
+	bool "TIM2 Quadrature Encoder"
+	default n
+	depends on STM32F0L0G0_TIM2
+	---help---
+		Reserve TIM2 for use by Quadrature Encoder.
+
 config STM32F0L0G0_TIM3_PWM
 	bool "TIM3 PWM"
 	default n
@@ -2650,6 +2687,144 @@ config STM32F0L0G0_TIM3_CHMODE
 endif # !STM32F0L0G0_PWM_MULTICHAN
 
 endif # STM32F0L0G0_TIM3_PWM
+
+config STM32F0L0G0_TIM3_QE
+	bool "TIM3 Quadrature Encoder"
+	default n
+	depends on STM32F0L0G0_TIM3
+	---help---
+		Reserve TIM3 for use by Quadrature Encoder.
+
+config STM32F0L0G0_TIM4_QE
+	bool "TIM3 Quadrature Encoder"
+	default n
+	depends on STM32F0L0G0_TIM4
+	---help---
+		Reserve TIM4 for use by Quadrature Encoder.
+
+menu "STM32F0L0G0 QEncoder Driver"
+	depends on SENSORS_QENCODER
+	depends on STM32F0L0G0_TIM1 || STM32F0L0G0_TIM2 || STM32F0L0G0_TIM3 || STM32F0L0G0_TIM4
+
+config STM32F0L0G0_TIM1_QEPSC
+	int "TIM1 QE pulse prescaler"
+	default 1
+	depends on STM32F0L0G0_TIM1_QE
+	---help---
+		This prescaler divides the number of recorded encoder pulses,
+		limiting the count rate at the expense of resolution.
+
+config STM32F0L0G0_TIM2_QEPSC
+	int "TIM2 QE pulse prescaler"
+	default 1
+	depends on STM32F0L0G0_TIM2_QE
+	---help---
+		This prescaler divides the number of recorded encoder pulses,
+		limiting the count rate at the expense of resolution.
+
+config STM32F0L0G0_TIM3_QEPSC
+	int "TIM3 QE pulse prescaler"
+	default 1
+	depends on STM32F0L0G0_TIM3_QE
+	---help---
+		This prescaler divides the number of recorded encoder pulses,
+		limiting the count rate at the expense of resolution.
+
+config STM32F0L0G0_TIM4_QEPSC
+	int "TIM3 QE pulse prescaler"
+	default 1
+	depends on STM32F0L0G0_TIM4_QE
+	---help---
+		This prescaler divides the number of recorded encoder pulses,
+		limiting the count rate at the expense of resolution.
+
+config STM32F0L0G0_QENCODER_DISABLE_EXTEND16BTIMERS
+	bool "Disable QEncoder timers extension from 16-bit to 32-bit"
+	default n
+	---help---
+		Disable the extension of 16-bit timers to 32-bit via interrupt-based
+		overflow tracking. When enabled, timers will use their native hardware
+		counter width (16-bit or 32-bit). This reduces interrupt overhead but
+		limits the position range for 16-bit timers.
+
+config STM32F0L0G0_QENCODER_INDEX_PIN
+	bool "Enable QEncoder timers support for index pin"
+	default n
+	---help---
+		Enable support for quadrature encoder index pin. The index pin can be
+		used to reset the encoder position to a known value when the index
+		pulse is detected.
+
+config STM32F0L0G0_QENCODER_FILTER
+	bool "Enable filtering on STM32F0L0G0 QEncoder input"
+	default y
+	---help---
+		Enable input filtering on quadrature encoder channels to reduce noise.
+
+choice
+	depends on STM32F0L0G0_QENCODER_FILTER
+	prompt "Input channel sampling frequency"
+	default STM32F0L0G0_QENCODER_SAMPLE_FDTS_4
+	---help---
+		Select the sampling frequency for the input filter.
+
+config STM32F0L0G0_QENCODER_SAMPLE_FDTS
+	bool "fDTS"
+
+config STM32F0L0G0_QENCODER_SAMPLE_CKINT
+	bool "fCK_INT"
+
+config STM32F0L0G0_QENCODER_SAMPLE_FDTS_2
+	bool "fDTS/2"
+
+config STM32F0L0G0_QENCODER_SAMPLE_FDTS_4
+	bool "fDTS/4"
+
+config STM32F0L0G0_QENCODER_SAMPLE_FDTS_8
+	bool "fDTS/8"
+
+config STM32F0L0G0_QENCODER_SAMPLE_FDTS_16
+	bool "fDTS/16"
+
+config STM32F0L0G0_QENCODER_SAMPLE_FDTS_32
+	bool "fDTS/32"
+
+endchoice
+
+choice
+	depends on STM32F0L0G0_QENCODER_FILTER
+	prompt "Input channel event count"
+	default STM32F0L0G0_QENCODER_SAMPLE_EVENT_6
+	---help---
+		Select the number of consecutive events required to validate a transition.
+
+config STM32F0L0G0_QENCODER_SAMPLE_EVENT_1
+	depends on STM32F0L0G0_QENCODER_SAMPLE_FDTS
+	bool "1"
+
+config STM32F0L0G0_QENCODER_SAMPLE_EVENT_2
+	depends on STM32F0L0G0_QENCODER_SAMPLE_CKINT
+	bool "2"
+
+config STM32F0L0G0_QENCODER_SAMPLE_EVENT_4
+	depends on STM32F0L0G0_QENCODER_SAMPLE_CKINT
+	bool "4"
+
+config STM32F0L0G0_QENCODER_SAMPLE_EVENT_5
+	depends on STM32F0L0G0_QENCODER_SAMPLE_FDTS_16 || STM32F0L0G0_QENCODER_SAMPLE_FDTS_32
+	bool "5"
+
+config STM32F0L0G0_QENCODER_SAMPLE_EVENT_6
+	depends on !STM32F0L0G0_QENCODER_SAMPLE_FDTS && !STM32F0L0G0_QENCODER_SAMPLE_CKINT
+	bool "6"
+
+config STM32F0L0G0_QENCODER_SAMPLE_EVENT_8
+	depends on !STM32F0L0G0_QENCODER_SAMPLE_FDTS
+	bool "8"
+
+endchoice
+
+endmenu # STM32F0L0G0 QEncoder Driver
 
 config STM32F0L0G0_TIM14_PWM
 	bool "TIM14 PWM"

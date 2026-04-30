@@ -26,7 +26,7 @@
 
 #include <nuttx/config.h>
 
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <sys/types.h>
 
@@ -40,6 +40,10 @@
 
 #ifdef CONFIG_STM32F0L0G0_IWDG
 #  include <stm32_wdg.h>
+#endif
+
+#ifdef CONFIG_SENSORS_QENCODER
+#  include "board_qencoder.h"
 #endif
 
 #include <arch/board/board.h>
@@ -78,7 +82,7 @@ int stm32_bringup(void)
   stm32_iwdginitialize("/dev/watchdog0", STM32_LSI_FREQUENCY);
 #endif
 
-#ifdef HAVE_LEDS
+#if !defined(CONFIG_ARCH_LEDS) && defined(CONFIG_USERLED_LOWER)
   /* Register the LED driver */
 
   ret = userled_lower_initialize(LED_DRIVER_PATH);
@@ -126,6 +130,19 @@ int stm32_bringup(void)
   if (ret < 0)
     {
       syslog(LOG_ERR, "ERROR: stm32_cansock_setup failed: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_SENSORS_QENCODER
+  /* Initialize and register the qencoder driver - TIM3 */
+
+  ret = board_qencoder_initialize(0, 3);
+  if (ret != OK)
+    {
+      syslog(LOG_ERR,
+             "ERROR: Failed to register the qencoder: %d\n",
+             ret);
+      return ret;
     }
 #endif
 

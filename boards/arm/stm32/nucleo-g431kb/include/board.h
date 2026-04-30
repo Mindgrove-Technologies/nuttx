@@ -209,7 +209,7 @@
  *   LED_SIGNAL          In a signal handler      No change
  *   LED_ASSERTION       An assertion failed      No change
  *   LED_PANIC           The system has crashed   Blinking
- *   LED_IDLE            STM32 is is sleep mode   Not used
+ *   LED_IDLE            STM32 is in sleep mode   Not used
  */
 
 #define LED_STARTED      0
@@ -240,7 +240,7 @@
 
 /* TIM1 PWM */
 
-#define GPIO_TIM1_CH1OUT  GPIO_TIM1_CH1OUT_1  /* PA8 */
+#define GPIO_TIM1_CH1OUT  (GPIO_TIM1_CH1OUT_1|GPIO_SPEED_50MHz)  /* PA8 */
 
 /* Comparators configuration ************************************************/
 

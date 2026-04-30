@@ -30,7 +30,7 @@
 #include <sched.h>
 #include <time.h>
 #include <unistd.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <nuttx/mmcsd.h>
 #include <nuttx/signal.h>
@@ -98,7 +98,7 @@ static void *stm32_cd_thread(void *arg)
            * rest for a millisecond or so.
            */
 
-          nxsig_usleep(1 * 1000);
+          nxsched_usleep(1 * 1000);
           g_chmediaclbk(g_chmediaarg);
         }
     }

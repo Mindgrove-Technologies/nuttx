@@ -223,7 +223,7 @@
 #include <stddef.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <nuttx/arch.h>
 #include <nuttx/irq.h>
@@ -534,7 +534,7 @@ static const struct stm32_i2c_config_s stm32_i2c2_config =
   .scl_pin       = GPIO_I2C2_SCL,
   .sda_pin       = GPIO_I2C2_SDA,
 #ifndef CONFIG_I2C_POLLED
-  .irq        = STM32_IRQ_I2C1
+  .irq        = STM32_IRQ_I2C2
 #endif
 };
 
@@ -569,7 +569,7 @@ static const struct stm32_i2c_config_s stm32_i2c3_config =
   .scl_pin       = GPIO_I2C3_SCL,
   .sda_pin       = GPIO_I2C3_SDA,
 #ifndef CONFIG_I2C_POLLED
-  .irq        = STM32_IRQ_I2C1
+  .irq        = STM32_IRQ_I2C3
 #endif
 };
 
@@ -604,7 +604,7 @@ static const struct stm32_i2c_config_s stm32_i2c4_config =
   .scl_pin       = GPIO_I2C4_SCL,
   .sda_pin       = GPIO_I2C4_SDA,
 #ifndef CONFIG_I2C_POLLED
-  .irq        = STM32_IRQ_I2C1
+  .irq        = STM32_IRQ_I2C4
 #endif
 };
 
@@ -872,7 +872,8 @@ static inline int stm32_i2c_sem_waitdone(struct stm32_i2c_priv_s *priv)
 
   while (priv->intstate != INTSTATE_DONE && elapsed < timeout);
 
-  i2cinfo("intstate: %d elapsed: %ld threshold: %ld status: 0x%08x\n",
+  i2cinfo("intstate: %d elapsed: %ld threshold: %ld"
+          " status: 0x%08" PRIx32 "\n",
           priv->intstate, (long)elapsed, (long)timeout, priv->status);
 
   /* Set the interrupt state back to IDLE */
@@ -1136,7 +1137,8 @@ static void stm32_i2c_tracedump(struct stm32_i2c_priv_s *priv)
     {
       trace = &priv->trace[i];
       syslog(LOG_DEBUG,
-             "%2d. STATUS: %08x COUNT: %3d EVENT: %2d PARM: %08x TIME: %d\n",
+             "%2d. STATUS: %08" PRIx32 " COUNT: %3d EVENT: %2d"
+             " PARM: %08" PRIx32 " TIME: %d\n",
              i + 1, trace->status, trace->count,  trace->event, trace->parm,
              (int)(trace->time - priv->start_time));
     }

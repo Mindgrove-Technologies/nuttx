@@ -32,7 +32,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 
 #include <nuttx/wdog.h>
@@ -72,6 +72,10 @@
 #define CAN_ERROR_PASSIVE_THRESHOLD 128
 
 #define CAN_ERROR_WARNING_THRESHOLD 96
+
+#define WORD_LENGTH         4U
+
+#define CANRAM_WORDS        2560U  /* Total words in Message RAM (RM0433) */
 
 /* General Configuration ****************************************************/
 
@@ -142,8 +146,11 @@
 
 /* CAN Clock Configuration **************************************************/
 
-#define STM32_FDCANCLK      STM32_HSE_FREQUENCY
+#ifndef STM32_FDCANCLK
+#  define STM32_FDCANCLK    STM32_HSE_FREQUENCY
+#endif
 #define CLK_FREQ            STM32_FDCANCLK
+
 #define PRESDIV_MAX         256
 
 /* Interrupts ***************************************************************/
@@ -346,7 +353,6 @@ static const struct fdcan_config_s stm32_fdcan1_config =
 #endif
 
 #ifdef CONFIG_STM32H7_FDCAN3
-#  error "FDCAN3 support not yet added to stm32h7x3xx header files (pinmap, irq, etc.)"
 static const struct fdcan_config_s stm32_fdcan2_config =
 {
   .tx_pin      = GPIO_CAN3_TX,
@@ -1805,6 +1811,8 @@ static int fdcan_ifup(struct net_driver_s *dev)
 
   priv->bifup = true;
 
+  netdev_carrier_on(dev);
+
   return OK;
 }
 
@@ -1832,6 +1840,8 @@ static int fdcan_ifdown(struct net_driver_s *dev)
   fdcan_reset(priv);
 
   priv->bifup = false;
+
+  netdev_carrier_off(dev);
 
   return OK;
 }
@@ -2046,6 +2056,11 @@ int fdcan_initialize(struct fdcan_driver_s *priv)
 
   if (!g_apb1h_init)
     {
+      /* Clear Message RAM (shared between FDCAN1/2/3) */
+
+      memset((void *)STM32_CANRAM_BASE, 0,
+             CANRAM_WORDS * WORD_LENGTH);
+
       fdcan_apb1hreset();
       g_apb1h_init = true;
     }
@@ -2183,7 +2198,7 @@ int fdcan_initialize(struct fdcan_driver_s *priv)
 
   regval = getreg32(priv->base + STM32_FDCAN_ILS_OFFSET);
   regval |= FDCAN_ILS_TCL;
-  putreg32(FDCAN_ILS_TCL, priv->base + STM32_FDCAN_ILS_OFFSET);
+  putreg32(regval, priv->base + STM32_FDCAN_ILS_OFFSET);
 
   /* Enable Tx buffer transmission interrupts
    * Note: Still need fdcan_enable_interrupts() to set ILE (IR line enable)
@@ -2220,7 +2235,9 @@ int fdcan_initialize(struct fdcan_driver_s *priv)
    * and relative address (in words) used for configuration
    */
 
-  const uint32_t iface_ram_base = (2560 / 2) * priv->iface_idx;
+  const uint32_t iface_ram_base =
+                 (CANRAM_WORDS / 2) * priv->iface_idx;
+
   const uint32_t gl_ram_base = STM32_CANRAM_BASE;
   uint32_t ram_offset = iface_ram_base;
 
@@ -2247,9 +2264,13 @@ int fdcan_initialize(struct fdcan_driver_s *priv)
    *
    * Discussion:
    * https://community.st.com/s/question/0D73W000001nzqFSAQ
+   *
+   * vmay23
+   * Using 64  --> some messages are being received but some are not
+   * Using 128 --> according to the tests, everything is working fine
    */
 
-  const uint8_t n_extid = 64;
+  const uint8_t n_extid = 128;
   priv->message_ram.filt_extid_addr = gl_ram_base + ram_offset * WORD_LENGTH;
 
   regval = (n_extid << FDCAN_XIDFC_LSE_SHIFT) & FDCAN_XIDFC_LSE_MASK;
@@ -2284,7 +2305,9 @@ int fdcan_initialize(struct fdcan_driver_s *priv)
 
   regval = (ram_offset << FDCAN_RXF0C_F0SA_SHIFT) & FDCAN_RXF0C_F0SA_MASK;
   regval |= (NUM_RX_FIFO0 << FDCAN_RXF0C_F0S_SHIFT) & FDCAN_RXF0C_F0S_MASK;
+
   putreg32(regval, priv->base + STM32_FDCAN_RXF0C_OFFSET);
+
   ram_offset += NUM_RX_FIFO0 * FIFO_ELEMENT_SIZE;
 
   /* Not using Rx FIFO1 */
@@ -2475,7 +2498,7 @@ int stm32_fdcansockinitialize(int intf)
 
 #ifdef CONFIG_STM32H7_FDCAN3
     case 2:
-      priv             = &g_fdcan2
+      priv             = &g_fdcan2;
       memset(priv, 0, sizeof(struct fdcan_driver_s));
       priv->base       = STM32_FDCAN3_BASE;
       priv->iface_idx  = 2;
@@ -3041,4 +3064,3 @@ static void fdcan_errint(struct fdcan_driver_s *priv, bool enable)
   putreg32(regval, priv->base + STM32_FDCAN_IE_OFFSET);
 }
 #endif
-

@@ -28,7 +28,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 
 #include <nuttx/fs/fs.h>
@@ -58,6 +58,10 @@
 
 #ifdef CONFIG_SENSORS_APDS9960
 #include "stm32_apds9960.h"
+#endif
+
+#ifdef CONFIG_INPUT_MPR121_KEYPAD
+#include "stm32_mpr121.h"
 #endif
 
 #ifdef CONFIG_CL_MFRC522
@@ -96,6 +100,18 @@
 
 #ifdef CONFIG_INPUT_NUNCHUCK
 #include "stm32_nunchuck.h"
+#endif
+
+#ifdef CONFIG_INPUT_SBUTTON
+#include "board_sbutton.h"
+#endif
+
+#ifdef CONFIG_INPUT_KMATRIX
+#include "stm32_kmatrix_gpio.h"
+#endif
+
+#ifdef CONFIG_INPUT_KMATRIX_I2C
+#include "stm32_kmatrix_i2c.h"
 #endif
 
 #ifdef CONFIG_SENSORS_ZEROCROSS
@@ -260,6 +276,16 @@ int stm32_bringup(void)
     }
 #endif
 
+#ifdef CONFIG_INPUT_MPR121_KEYPAD
+  /* Initialize MPR121 using I2C1 bus to /dev/keypad0 */
+
+  ret = board_mpr121_initialize(0, 1);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: board_mpr121_initialize failed: %d\n", ret);
+    }
+#endif
+
 #ifdef CONFIG_LCD_ST7032
   ret = stm32_st7032init("/dev/slcd0");
   if (ret < 0)
@@ -410,6 +436,27 @@ int stm32_bringup(void)
     }
 #endif
 
+#ifdef CONFIG_INPUT_KMATRIX
+  /* Initialize and register the keyboard matrix driver */
+
+  ret = board_kmatrix_initialize(CONFIG_INPUT_KMATRIX_DEVPATH);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: board_kmatrix_initialize() failed: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_INPUT_KMATRIX_I2C
+  /* Initialize and register the keyboard matrix driver via I2C expander */
+
+  ret = board_kmatrix_i2c_initialize("/dev/kbd0");
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: board_kmatrix_i2c_initialize() failed: %d\n",
+             ret);
+    }
+#endif
+
 #ifdef CONFIG_INPUT_NUNCHUCK
   /* Register the Nunchuck driver */
 
@@ -449,6 +496,16 @@ int stm32_bringup(void)
   if (ret < 0)
     {
       syslog(LOG_ERR, "ERROR: userled_lower_initialize() failed: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_INPUT_SBUTTON
+  /* Register the Single Button Dual Action driver */
+
+  ret = board_sbutton_initialize(0);
+  if (ret < 0)
+    {
+      syslog(LOG_ERR, "ERROR: board_sbtn_initialize() failed: %d\n", ret);
     }
 #endif
 
@@ -620,6 +677,14 @@ int stm32_bringup(void)
   if (ret < 0)
     {
       syslog(LOG_ERR, "ERROR: stm32_mfrc522initialize() failed: %d\n", ret);
+    }
+#endif
+
+#ifdef CONFIG_ADC_HX711
+  ret = stm32_hx711_initialize();
+  if (ret != OK)
+    {
+      aerr("ERROR: Failed to initialize hx711: %d\n", ret);
     }
 #endif
 

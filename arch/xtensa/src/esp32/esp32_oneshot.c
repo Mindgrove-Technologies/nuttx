@@ -29,7 +29,7 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <nuttx/arch.h>
 #include <nuttx/timers/oneshot.h>
@@ -37,8 +37,8 @@
 
 #include "hardware/esp32_soc.h"
 
+#include "esp_clk.h"
 #include "esp32_tim.h"
-#include "esp32_clockconfig.h"
 #include "esp32_oneshot.h"
 
 #ifdef CONFIG_ESP32_ONESHOT

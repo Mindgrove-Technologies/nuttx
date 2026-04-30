@@ -33,7 +33,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 
 #include <arch/board/board.h>
 #include <nuttx/irq.h>
@@ -786,6 +786,8 @@ static int stm32can_ifup(struct net_driver_s *dev)
 
   priv->dev.d_buf = (uint8_t *)priv->txdesc;
 
+  netdev_carrier_on(dev);
+
   return OK;
 }
 
@@ -816,6 +818,8 @@ static int stm32can_ifdown(struct net_driver_s *dev)
   /* Reset CAN */
 
   stm32can_reset(priv);
+
+  netdev_carrier_off(dev);
 
   return OK;
 }

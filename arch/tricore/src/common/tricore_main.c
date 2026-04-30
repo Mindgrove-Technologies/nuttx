@@ -28,8 +28,13 @@
 #include <nuttx/init.h>
 
 #include "Ifx_Types.h"
-#include "IfxScuWdt.h"
 #include "IfxCpu.h"
+
+#ifdef CONFIG_ARCH_CHIP_TC4XX
+#  include "IfxWtu.h"
+#else
+#  include "IfxScuWdt.h"
+#endif
 
 /****************************************************************************
  * Private Functions
@@ -43,13 +48,15 @@ static void core_main(void)
    * Enable the watchdogs and service them periodically if it is required
    */
 
-  IfxScuWdt_disableCpuWatchdog(IfxScuWdt_getCpuWatchdogPassword());
-  IfxScuWdt_disableSafetyWatchdog(IfxScuWdt_getSafetyWatchdogPassword());
-
   /* Wait for CPU sync event */
 
   IfxCpu_emitEvent(&g_sync_event);
+
+#if defined(CONFIG_ARCH_CHIP_TC3XX)
   IfxCpu_waitEvent(&g_sync_event, 1);
+#else
+  IfxCpu_waitEvent(&g_sync_event, UINT32_MAX, 1);
+#endif
 
   if (IfxCpu_getCoreIndex() == 0)
     {
@@ -66,6 +73,19 @@ static void core_main(void)
 
 void core0_main(void)
 {
+  /* All WDTs except WDTCPU0 and system watchdog WDTSYS are in
+   * disabled mode after Boot-FW execution. Disable the watchdog
+   * to ensure the normal startup of the system.
+   */
+
+#if defined(CONFIG_ARCH_CHIP_TC3XX)
+  IfxScuWdt_disableCpuWatchdog(IfxScuWdt_getCpuWatchdogPassword());
+  IfxScuWdt_disableSafetyWatchdog(IfxScuWdt_getSafetyWatchdogPassword());
+#elif defined(CONFIG_ARCH_CHIP_TC4XX)
+  IfxWtu_disableCpuWatchdog(IfxWtu_getCpuWatchdogPassword());
+  IfxWtu_disableSystemWatchdog(IfxWtu_getSystemWatchdogPassword());
+#endif
+
   core_main();
 }
 
@@ -90,6 +110,11 @@ void core4_main(void)
 }
 
 void core5_main(void)
+{
+  core_main();
+}
+
+void core6_main(void)
 {
   core_main();
 }

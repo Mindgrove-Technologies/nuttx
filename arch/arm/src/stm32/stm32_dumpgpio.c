@@ -33,8 +33,8 @@
 
 #include <sys/types.h>
 #include <assert.h>
-#include <debug.h>
 
+#include <nuttx/debug.h>
 #include <nuttx/irq.h>
 
 #include "arm_internal.h"
@@ -131,14 +131,14 @@ int stm32_dumpgpio(uint32_t pinset, const char *msg)
     }
   else
     {
-      _info("  GPIO%c not enabled: APB2ENR: %08x\n",
+      _info("  GPIO%c not enabled: APB2ENR: %08" PRIx32 "\n",
           g_portchar[port], getreg32(STM32_RCC_APB2ENR));
     }
 
 #elif defined(CONFIG_STM32_STM32L15XX)
   DEBUGASSERT(port < STM32_NGPIO_PORTS);
 
-  _info("GPIO%c pinset: %08x base: %08x -- %s\n",
+  _info("GPIO%c pinset: %08" PRIx32 " base: %08" PRIx32 " -- %s\n",
         g_portchar[port], pinset, base, msg);
 
   if ((getreg32(STM32_RCC_AHBENR) & RCC_AHBENR_GPIOEN(port)) != 0)
@@ -217,7 +217,7 @@ int stm32_dumpgpio(uint32_t pinset, const char *msg)
     }
   else
     {
-      _info("  GPIO%c not enabled: AHB1ENR: %08x\n",
+      _info("  GPIO%c not enabled: AHB1ENR: %08" PRIx32 "\n",
             g_portchar[port], getreg32(STM32_RCC_AHB1ENR));
     }
 

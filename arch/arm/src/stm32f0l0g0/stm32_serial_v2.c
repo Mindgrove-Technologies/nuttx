@@ -33,8 +33,8 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
 
+#include <nuttx/debug.h>
 #include <nuttx/irq.h>
 #include <nuttx/arch.h>
 #include <nuttx/fs/ioctl.h>
@@ -118,6 +118,7 @@ struct up_dev_s
    */
 
 #ifdef CONFIG_SERIAL_TERMIOS
+  uint8_t           rxftcfg;   /* Rx FIFO threshold level */
   uint8_t           parity;    /* 0=none, 1=odd, 2=even */
   uint8_t           bits;      /* Number of bits (7 or 8) */
   bool              stopbits2; /* True: Configure with 2 stop bits instead of 1 */
@@ -1023,7 +1024,7 @@ static void up_shutdown(struct uart_dev_s *dev)
  * Description:
  *   Configure the USART to operation in interrupt driven mode.  This method
  *   is called when the serial port is opened.  Normally, this is just after
- *   the the setup() method is called, however, the serial console may
+ *   the setup() method is called, however, the serial console may
  *   operate in a non-interrupt driven mode during the boot phase.
  *
  *   RX and TX interrupts are not enabled when by the attach method (unless

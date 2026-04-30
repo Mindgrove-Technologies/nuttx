@@ -154,4 +154,20 @@ if(CONFIG_STEPPER_DRV8825)
   list(APPEND SRCS stm32_drv8825.c)
 endif()
 
+if(CONFIG_INPUT_SBUTTON)
+  list(APPEND SRCS stm32_sbutton.c)
+endif()
+
+if(CONFIG_INPUT_KMATRIX)
+  list(APPEND SRCS stm32_kmatrix_gpio.c)
+endif()
+
+if(CONFIG_INPUT_KMATRIX_I2C)
+  list(APPEND SRCS stm32_kmatrix_i2c.c)
+endif()
+
+if(CONFIG_INPUT_MPR121_KEYPAD)
+  list(APPEND SRCS stm32_mpr121.c)
+endif()
+
 target_sources(board PRIVATE ${SRCS})

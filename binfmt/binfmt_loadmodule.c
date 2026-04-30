@@ -27,7 +27,7 @@
 #include <nuttx/config.h>
 
 #include <sched.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 
 #include <nuttx/lib/lib.h>
@@ -121,6 +121,12 @@ static int load_absmodule(FAR struct binary_s *bin, FAR const char *filename,
           /* Successfully loaded -- break out with ret == 0 */
 
           binfo("Successfully loaded module %s\n", filename);
+
+          /* Save the filename of the loaded module */
+
+#ifdef CONFIG_BINFMT_STORE_FILENAME
+          strlcpy(bin->fname, filename, sizeof(bin->fname));
+#endif
 
           /* Save the unload method for use by unload_module */
 

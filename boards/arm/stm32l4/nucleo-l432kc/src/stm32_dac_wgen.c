@@ -26,7 +26,7 @@
 
 #include <nuttx/config.h>
 
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 #include <math.h>
 #include <stdint.h>
@@ -277,7 +277,7 @@ int dac_wgen_main(int argc, char *argv[])
 
       /* Sleep */
 
-      nxsig_sleep(1);
+      nxsched_sleep(1);
     }
 
 errout:

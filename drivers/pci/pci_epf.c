@@ -26,7 +26,7 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <string.h>
 
 #include <nuttx/lib/math32.h>
@@ -254,7 +254,7 @@ FAR void *pci_epf_alloc_space(FAR struct pci_epf_device_s *epf, int barno,
 
   bar = epf->bar;
 
-  space = kmm_zalloc(size);
+  space = pci_epc_dma_memalign(epf->epc, align, size);
   if (space == NULL)
     {
       pcierr("Failed to allocate mem space\n");

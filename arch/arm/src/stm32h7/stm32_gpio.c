@@ -30,8 +30,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <errno.h>
-#include <debug.h>
 
+#include <nuttx/debug.h>
 #include <nuttx/irq.h>
 #include <arch/stm32h7/chip.h>
 #include <nuttx/spinlock.h>
@@ -44,14 +44,11 @@
  * families
  */
 
-#if defined(CONFIG_STM32H7_STM32H7X3XX) || \
-    defined(CONFIG_STM32H7_STM32H7B3XX) || \
-    defined(CONFIG_STM32H7_STM32H7X5XX) || \
-    defined(CONFIG_STM32H7_STM32H7X7XX)
-
-#if defined(CONFIG_STM32H7_USE_LEGACY_PINMAP)
-#  pragma message "CONFIG_STM32H7_USE_LEGACY_PINMAP will be deprecated migrate board.h see tools/stm32_pinmap_tool.py"
-#endif
+#if  defined(CONFIG_STM32H7_STM32H7X0XX) || \
+     defined(CONFIG_STM32H7_STM32H7X3XX) || \
+     defined(CONFIG_STM32H7_STM32H7B3XX) || \
+     defined(CONFIG_STM32H7_STM32H7X5XX) || \
+     defined(CONFIG_STM32H7_STM32H7X7XX)
 
 /****************************************************************************
  * Private Data
@@ -295,7 +292,7 @@ int stm32_configgpio(uint32_t cfgset)
   putreg32(regval, base + STM32_GPIO_PUPDR_OFFSET);
 
   /* Set the alternate function (Only alternate function pins)
-   * This is done after configuring the the pin's connection
+   * This is done after configuring the pin's connection
    * on a change away from an Alternate function.
    */
 

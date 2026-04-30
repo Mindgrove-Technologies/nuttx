@@ -25,7 +25,7 @@
 #include <nuttx/config.h>
 
 #include <assert.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -36,7 +36,7 @@
 #include <nuttx/clock.h>
 #include <nuttx/timers/oneshot.h>
 
-#include "esp32s3_clockconfig.h"
+#include "esp_clk.h"
 #include "esp32s3_oneshot.h"
 #include "esp32s3_tim.h"
 #include "hardware/esp32s3_soc.h"

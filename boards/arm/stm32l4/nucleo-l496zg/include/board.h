@@ -445,13 +445,6 @@
 #  define STM32_SDMMC_SDXFR_CLKDIV      (2 << STM32_SDMMC_CLKCR_CLKDIV_SHIFT)
 #endif
 
-#if defined(CONFIG_STM32L4_SDMMC2)
-#  define GPIO_SDMMC2_D0 GPIO_SDMMC2_D0_1
-#  define GPIO_SDMMC2_D1 GPIO_SDMMC2_D1_1
-#  define GPIO_SDMMC2_D2 GPIO_SDMMC2_D2_1
-#  define GPIO_SDMMC2_D3 GPIO_SDMMC2_D3_1
-#endif
-
 /* DMA Channel/Stream Selections ********************************************/
 
 /* Stream selections are arbitrary for now but might become important in the
@@ -463,13 +456,9 @@
  *   DMAMAP_SDMMC_1 = Channel 4, Stream 7
  *   DMAMAP_SDMMC_2 = Channel 5, Stream 7
  *
- * SDMMC2 DMA
- *   DMAMAP_SDMMC2_1 = Channel 11, Stream 0
- *   DMAMAP_SDMMC3_2 = Channel 11, Stream 5
  */
 
 #define DMAMAP_SDMMC1  DMACHAN_SDMMC_1
-#define DMAMAP_SDMMC2  DMACHAN_SDMMC_2
 
 /* FLASH wait states
  *
@@ -531,7 +520,7 @@
 #define LED_SIGNAL         5 /* In a signal handler      N/C    GLOW  N/C  */
 #define LED_ASSERTION      6 /* An assertion failed      GLOW   N/C   GLOW */
 #define LED_PANIC          7 /* The system has crashed   Blink  OFF   N/C  */
-#define LED_IDLE           8 /* MCU is is sleep mode     ON     OFF   OFF  */
+#define LED_IDLE           8 /* MCU is in sleep mode     ON     OFF   OFF  */
 
 /* Thus if the Green LED is statically on, NuttX has successfully booted and
  * is, apparently, running normally.  If the Red LED is flashing at
@@ -582,8 +571,8 @@
 
 /* LPUART1 is connector to Virtual COM port PG6 and PG7. */
 
-#define GPIO_LPUART1_TX    GPIO_LPUART1_TX_3
-#define GPIO_LPUART1_RX    GPIO_LPUART1_RX_3
+#define GPIO_LPUART1_TX   GPIO_LPUART1_TX_3
+#define GPIO_LPUART1_RX   GPIO_LPUART1_RX_3
 
 /* DMA channels *************************************************************/
 

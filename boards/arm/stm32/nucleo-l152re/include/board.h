@@ -174,7 +174,7 @@
  *   LED_SIGNAL          In a signal handler      No change
  *   LED_ASSERTION       An assertion failed      No change
  *   LED_PANIC           The system has crashed   Blinking
- *   LED_IDLE            STM32 is is sleep mode   Not used
+ *   LED_IDLE            STM32 is in sleep mode   Not used
  */
 
 #define LED_STARTED      0
@@ -210,8 +210,8 @@
  * USART2_TX - PA2
  */
 
-#define GPIO_USART2_RX GPIO_USART2_RX_1 /* PA3 */
-#define GPIO_USART2_TX GPIO_USART2_TX_1 /* PA2 */
+#define GPIO_USART2_RX (GPIO_USART2_RX_1|GPIO_SPEED_40MHz) /* PA3 */
+#define GPIO_USART2_TX (GPIO_USART2_TX_1|GPIO_SPEED_40MHz) /* PA2 */
 
 /* SPI1 */
 
@@ -221,7 +221,7 @@
 
 /* I2C1 */
 
-#define GPIO_I2C1_SCL    GPIO_I2C1_SCL_2  /* PB8  CN5 pin 10, D15 */
-#define GPIO_I2C1_SDA    GPIO_I2C1_SDA_2  /* PB9  CN5 pin 9, D14 */
+#define GPIO_I2C1_SCL    (GPIO_I2C1_SCL_2|GPIO_SPEED_40MHz)  /* PB8  CN5 pin 10, D15 */
+#define GPIO_I2C1_SDA    (GPIO_I2C1_SDA_2|GPIO_SPEED_40MHz)  /* PB9  CN5 pin 9, D14 */
 
 #endif /* __BOARDS_ARM_STM32_NUCLEO_L152RE_INCLUDE_BOARD_H */

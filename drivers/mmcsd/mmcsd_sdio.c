@@ -41,7 +41,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
-#include <debug.h>
+#include <nuttx/debug.h>
 #include <errno.h>
 
 #include <nuttx/kmalloc.h>
@@ -116,11 +116,11 @@
         } \
       else \
         { \
-          nxsig_usleep(usec); \
+          nxsched_usleep(usec); \
         } \
     } while (0)
 #else
-#  define MMCSD_USLEEP(usec) nxsig_usleep(usec)
+#  define MMCSD_USLEEP(usec) nxsched_usleep(usec)
 #endif
 
 /****************************************************************************
@@ -951,7 +951,7 @@ static void mmcsd_decode_csd(FAR struct mmcsd_state_s *priv, uint32_t csd[4])
   finfo("  FILE_FORMAT: %d ECC: %d (MMC) CRC: %d\n",
         decoded.fileformat, decoded.mmcecc, decoded.crc);
 
-  finfo("Capacity: %luKb, Block size: %db, nblocks: %d wrprotect: %d\n",
+  finfo("Capacity: %luKB, Block size: %dB, nblocks: %d wrprotect: %d\n",
         (unsigned long)MMCSD_CAPACITY(priv->part[0].nblocks,
                                       priv->blockshift),
         priv->blocksize, priv->part[0].nblocks, priv->wrprotect);
@@ -2822,15 +2822,23 @@ static int mmcsd_widebus(FAR struct mmcsd_state_s *priv)
     }
 #ifdef CONFIG_MMCSD_MMCSUPPORT
   else if (IS_MMC(priv->type) &&
-           ((priv->buswidth & MMCSD_SCR_BUSWIDTH_4BIT) != 0 &&
-           (priv->caps & SDIO_CAPS_1BIT_ONLY) == 0))
+           (priv->caps & SDIO_CAPS_1BIT_ONLY) == 0)
     {
-      /* SD card supports 4-bit BUS and host settings is not 1-bit only.
-       * Configuring MMC - Use MMC_SWITCH access modes.
+      /* Configuring MMC - Use MMC_SWITCH access modes.
+       * Select 8-bit if host supports it, otherwise 4-bit.
        */
 
-      mmcsd_sendcmdpoll(priv, MMCSD_CMD6,
-                        MMC_CMD6_BUSWIDTH(EXT_CSD_BUS_WIDTH_4));
+      if (priv->caps & SDIO_CAPS_8BIT)
+        {
+          mmcsd_sendcmdpoll(priv, MMCSD_CMD6,
+                            MMC_CMD6_BUSWIDTH(EXT_CSD_BUS_WIDTH_8));
+        }
+      else
+        {
+          mmcsd_sendcmdpoll(priv, MMCSD_CMD6,
+                            MMC_CMD6_BUSWIDTH(EXT_CSD_BUS_WIDTH_4));
+        }
+
       ret = mmcsd_recv_r1(priv, MMCSD_CMD6);
 
       if (ret != OK)
@@ -4080,7 +4088,7 @@ static int mmcsd_cardidentify(FAR struct mmcsd_state_s *priv)
             {
               /* I am a little confused.. I think both SD and MMC cards
                * support CMD55 (but maybe only SD cards support CMD55).
-               * We'll make the the MMC vs. SD decision based on CMD1 and
+               * We'll make the MMC vs. SD decision based on CMD1 and
                * ACMD41.
                */
 
