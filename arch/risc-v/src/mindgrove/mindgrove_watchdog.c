@@ -50,7 +50,6 @@
 
 #include <nuttx/config.h>
 
-
 #include <nuttx/arch.h>
 #include <sys/types.h>
 #include <stdint.h>
@@ -59,7 +58,6 @@
 #include <errno.h>
 #include <debug.h>
 #include "riscv_internal.h"
-
 
 #include <nuttx/irq.h>
 #include <nuttx/arch.h>
@@ -164,87 +162,55 @@ static int mg_wdt_start(FAR struct watchdog_lowerhalf_s *lower)
   uint32_t ctrl;
   irqstate_t flags;
 
-  // DEBUGASSERT(priv != NULL && priv->regs != NULL);
+  DEBUGASSERT(priv != NULL && priv->regs != NULL);
 
-// printf("inside start\n\r");
+  /* Convert timeout (ms) → watchdog cycles */
+  cycles = mg_wdt_ms_to_cycles(priv->timeout_ms);
+  if (cycles == 0)
+    {
+      wderr("ERROR: timeout %lu ms overflows WDT cycle register\n",
+            (unsigned long)priv->timeout_ms);
+      return -EINVAL;
+    }
 
-  // cycles = mg_wdt_ms_to_cycles(priv->timeout_ms);
-  // if (cycles == 0)
-  //   {
-  //     wderr("ERROR: timeout %lu ms overflows WDT cycle register\n",
-  //           (unsigned long)priv->timeout_ms);
-  //     return -EINVAL;
-  //   }
+  /* Enter critical section */
+  flags = enter_critical_section();
 
-  // flags = enter_critical_section();
+  /* 1. Load watchdog counter */
+  putreg32(cycles, MG_WDT_CYCLES);
 
-  /* 1. Write reload value */
+  /* Small delay (if HW requires write settling) */
+  for (volatile int i = 0; i < 8; i++)
+    {
+      __asm__ volatile ("nop");
+    }
 
-  // priv->regs->WDT_CYCLES = cycles;
+  /* 2. Configure control register */
+  if (!priv->soft_reset)
+    {
+      ctrl = MG_WDT_CTRL_HARD_RESET | MG_WDT_CTRL_ENABLE;
+    }
+  else
+    {
+      ctrl = MG_WDT_CTRL_SOFT_RESET |
+             MG_WDT_CTRL_INTR_MODE |
+             MG_WDT_CTRL_ENABLE;
+    }
 
-  // putreg32(5,MG_WDT_CYCLES);
-// printf("inside start%d,%d\n\r",cycles,MG_WDT_CYCLES);
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-*(volatile uint32_t *)0x40500 = 1;
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
+  putreg32(ctrl, MG_WDT_CTRL);
 
-
-*(volatile uint32_t *)0x40508 = 5;
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-asm volatile("nop");
-
-  /* 2. Configure control register:
-   *    Hard-reset mode : HARD_RESET bit only (bit 1)
-   *    Soft-reset mode : SOFT_RESET (bit 2) | INTR_MODE (bit 1 = 0) | ENABLE
-   */
-
-  // if (!priv->soft_reset)
-  //   {
-  //     ctrl = MG_WDT_CTRL_HARD_RESET | MG_WDT_CTRL_ENABLE;
-  //   }
-  // else
-  //   {
-  //     ctrl = MG_WDT_CTRL_SOFT_RESET | MG_WDT_CTRL_INTR_MODE
-  //          | MG_WDT_CTRL_ENABLE;
-  //   }
-
-  // priv->regs->WDT_CTRL = ctrl;
-// putreg16(ctrl,MG_WDT_CTRL);
-  /* 3. Arm the timer */
-
-  // priv->regs->WDT_ACTIVE = 1U;
-  putreg32(1,MG_WDT_ACTIVE);
+  /* 3. Start watchdog */
+  putreg32(1, MG_WDT_ACTIVE);
 
   priv->started = true;
 
-  // leave_critical_section(flags);
+  /* Leave critical section */
+  leave_critical_section(flags);
 
   wdinfo("WDT started: timeout=%lu ms, cycles=%lu, mode=%s\n",
          (unsigned long)priv->timeout_ms,
          (unsigned long)cycles,
          priv->soft_reset ? "soft-reset" : "hard-reset");
-         printf("inside start\n\r");
 
   return OK;
 }
@@ -259,24 +225,14 @@ static int mg_wdt_stop(FAR struct watchdog_lowerhalf_s *lower)
 {
   FAR struct mg_wdt_lowerhalf_s *priv = TO_MG_WDT(lower);
   irqstate_t flags;
-printf("inside stop");
-  // DEBUGASSERT(priv != NULL && priv->regs != NULL);
-
-
-
 
   flags = enter_critical_section();
-
-  // priv->regs->WDT_CTRL   = 0U;   /* Clear enable + mode bits */
-  // priv->regs->WDT_CYCLES = 0U;   /* Clear reload value       */
-  // priv->regs->WDT_ACTIVE = 0U;   /* De-assert active latch   */
 
   priv->started = false;
 
   leave_critical_section(flags);
 
   wdinfo("WDT stopped\n");
-  printf("inside stop");
   return OK;
 }
 
