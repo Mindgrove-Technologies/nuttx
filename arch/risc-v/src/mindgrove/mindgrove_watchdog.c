@@ -177,7 +177,18 @@ static int mg_wdt_start(FAR struct watchdog_lowerhalf_s *lower)
             (unsigned long)priv->timeout_ms);
       return -EINVAL;
     }
-
+    
+  /* Enter critical section to ensure configuration of watchdog.
+    *
+    * The following sequence must not be interrupted:
+    *  - Load timeout cycles
+    *  - Configure control register
+    *  - Activate watchdog
+    *
+    * An interrupt occurring in between these steps could leave the WDT
+    * in a partially configured state, potentially causing unintended resets
+    * or incorrect timeout behavior.
+  */
   /* Enter critical section */
   flags = enter_critical_section();
 
@@ -253,9 +264,6 @@ static int mg_wdt_keepalive(FAR struct watchdog_lowerhalf_s *lower)
   FAR struct mg_wdt_lowerhalf_s *priv = TO_MG_WDT(lower);
 
   // DEBUGASSERT(priv != NULL && priv->regs != NULL);
-
-printf("inside keepalive\n\r");
-
   if (!priv->started)
     {
       wderr("ERROR: keepalive called but WDT is not running\n");
@@ -266,9 +274,6 @@ printf("inside keepalive\n\r");
    * needed — this is a single 32-bit MMIO write and is inherently atomic
    * on the target architecture.
    */
-
-  // priv->regs->WDT_ACTIVE = 1U;
-
   wdinfo("WDT keepalive (pet)\n");
   return OK;
 }
@@ -285,7 +290,6 @@ static int mg_wdt_getstatus(FAR struct watchdog_lowerhalf_s *lower,
                             FAR struct watchdog_status_s    *status)
 {
   FAR struct mg_wdt_lowerhalf_s *priv = TO_MG_WDT(lower);
-printf("inside get status\n\r");
   DEBUGASSERT(priv != NULL && status != NULL);
 
   memset(status, 0, sizeof(*status));
@@ -326,7 +330,6 @@ static int mg_wdt_settimeout(FAR struct watchdog_lowerhalf_s *lower,
   uint32_t cycles;
 
   DEBUGASSERT(priv != NULL);
-printf("inside wdt set timeout\n\r");
   if (timeout_ms == 0)
     {
       wderr("ERROR: zero timeout is not allowed\n");
@@ -379,7 +382,6 @@ static xcpt_t mg_wdt_capture(FAR struct watchdog_lowerhalf_s *lower,
    *   2. Store 'handler' in priv and call it from your_isr
    *   3. Return the old handler pointer
    */
-printf("inside wdt_capture\n\r");
   UNUSED(lower);
   UNUSED(handler);
   wdwarn("WARNING: WDT capture (pre-timeout IRQ) not supported\n");
@@ -408,7 +410,6 @@ int mg_wdt_initialize(FAR const char *devpath, bool soft_reset)
 {
   FAR struct mg_wdt_lowerhalf_s *priv = &g_mg_wdt_priv;
   FAR void *handle;
-printf("insiode init");
   DEBUGASSERT(devpath != NULL);
 
   /* Initialise private state */
