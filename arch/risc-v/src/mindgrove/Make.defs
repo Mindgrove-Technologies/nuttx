@@ -21,3 +21,6 @@ endif
 ifdef CONFIG_PWM
 CHIP_CSRCS += mindgrove_pwm.c 
 endif
+ifdef CONFIG_WATCHDOG
+CHIP_CSRCS += mindgrove_watchdog.c
+endif

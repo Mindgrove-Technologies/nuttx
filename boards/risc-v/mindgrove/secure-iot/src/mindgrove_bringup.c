@@ -33,6 +33,7 @@
 #include <nuttx/fs/fs.h>
 #include <nuttx/input/buttons.h>
 #include "mindgrove_spi.h"
+#include "mindgrove_watchdog.h"
 #include <nuttx/spi/spi_transfer.h>
 #include <nuttx/timers/pwm.h>
 #include "mindgrove_pwm.h"
@@ -170,5 +171,18 @@ int ret;
         }
     }
 #endif
+
+#if defined(CONFIG_WATCHDOG)
+ret = mg_wdt_initialize("/dev/watchdog0", false);
+if (ret < 0)
+  {
+    printf("ERROR: Failed to register /dev/watchdog0: %d\n", ret);
+  }
+else
+  {
+    printf("Registered /dev/watchdog0 successfully\n");
+  }
+#endif
+
 return 0;
 }
