@@ -35,8 +35,13 @@
 #include "mindgrove_spi.h"
 #include "mindgrove_watchdog.h"
 #include <nuttx/spi/spi_transfer.h>
+#include <nuttx/timers/pwm.h>
+#include "mindgrove_pwm.h"
+#include <nuttx/i2c/i2c_master.h>
 #include "secure-iot.h"
 #include <nuttx/spi/spi.h>
+#include "mindgrove_gpio.h"
+#include "mindgrove_i2c.h"
 
 
 
@@ -52,7 +57,7 @@ int mindgrove_bringup(void)
 {
 
 struct spi_dev_s *spi;
-  int ret;
+int ret;
 
 #if defined(CONFIG_MINDGROVE_SPI0)
   spi = mg_spibus_initialize(0);
@@ -60,7 +65,7 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 0); /* Creates /dev/spi0 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI0: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI0: %d\n\r", ret);
 #endif
     }
 #endif
@@ -71,7 +76,7 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 1); /* Creates /dev/spi1 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI1: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI1: %d\n\r", ret);
 #endif
     }
 #endif
@@ -83,7 +88,7 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 2); /* Creates /dev/spi2 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI2: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI2: %d\n\r", ret);
 #endif
     }
 #endif
@@ -94,23 +99,90 @@ struct spi_dev_s *spi;
     {
 #ifdef CONFIG_SPI_DRIVER
       ret = spi_register(spi, 3); /* Creates /dev/spi3 */
-      if (ret < 0) _alert("ERROR: Failed to register SPI3: %d\n", ret);
+      if (ret < 0) _alert("ERROR: Failed to register SPI3: %d\n\r", ret);
 #endif
     }
 #endif
 
- 
+#ifdef CONFIG_DEV_GPIO
 
-  #if defined(CONFIG_WATCHDOG)
-  ret = mg_wdt_initialize("/dev/watchdog0", false);
-  if (ret < 0)
+  ret = mindgrove_gpio_init();
+
+  if (ret<0){
+    serr("ERROR: Failed to initialize GPIO\n");
+  }
+  
+#endif
+
+
+#if defined(CONFIG_MINDGROVE_I2C0)
+
+  FAR struct i2c_master_s *i2c0;
+
+  i2c0 = mg_i2c_initialize(0);
+  if (i2c0 != NULL)
     {
-      printf("ERROR: Failed to register /dev/watchdog0: %d\n", ret);
+      ret = i2c_register(i2c0, 0);   /* Creates /dev/i2c0 */
+      if (ret < 0)
+        {
+          _alert("ERROR: Failed to register I2C0: %d\n\r", ret);
+        }
     }
-  else
+
+#endif
+#if defined(CONFIG_MINDGROVE_I2C1)
+
+  FAR struct i2c_master_s *i2c1;
+
+  i2c1 = mg_i2c_initialize(1);
+  if (i2c1 != NULL)
     {
-      printf("Registered /dev/watchdog0 successfully\n");
+      ret = i2c_register(i2c1, 1);   /* Creates /dev/i2c0 */
+      if (ret < 0)
+        {
+          _alert("ERROR: Failed to register I2C1: %d\n\r", ret);
+        }
+    }
+
+#endif
+
+#if defined(CONFIG_PWM)
+  FAR struct pwm_lowerhalf_s *pwm;
+  char devpath[16];
+
+  for (int i = 0; i < 14; i++)  /* PWM_MAX_COUNT = 14 */
+    {
+      pwm = mg_pwm_initialize(i);
+      if (pwm == NULL)
+        {
+          printf("ERROR: mg_pwm_initialize(%d) returned NULL\n", i);
+          continue;
+        }
+
+      snprintf(devpath, sizeof(devpath), "/dev/pwm%d", i);
+      ret = pwm_register(devpath, pwm);
+      if (ret < 0)
+        {
+          printf("ERROR: Failed to register %s: %d\n", devpath, ret);
+        }
+      else
+        {
+          printf("Registered %s successfully\n", devpath);
+        }
     }
 #endif
- return 0;
+
+#if defined(CONFIG_WATCHDOG)
+ret = mg_wdt_initialize("/dev/watchdog0", false);
+if (ret < 0)
+  {
+    printf("ERROR: Failed to register /dev/watchdog0: %d\n", ret);
+  }
+else
+  {
+    printf("Registered /dev/watchdog0 successfully\n");
+  }
+#endif
+
+return 0;
 }

@@ -260,8 +260,8 @@ static uart_dev_t g_uart2port =
 #endif
 
 #ifdef CONFIG_MINDGROVE_UART3
-static char g_uart0rxbuffer[CONFIG_UART3_RXBUFSIZE];
-static char g_uart0txbuffer[CONFIG_UART3_TXBUFSIZE];
+static char g_uart3rxbuffer[CONFIG_UART3_RXBUFSIZE];
+static char g_uart3txbuffer[CONFIG_UART3_TXBUFSIZE];
 #endif
 
 #ifdef CONFIG_MINDGROVE_UART3
@@ -293,8 +293,8 @@ static uart_dev_t g_uart3port =
 #endif
 
 #ifdef CONFIG_MINDGROVE_UART4
-static char g_uart0rxbuffer[CONFIG_UART4_RXBUFSIZE];
-static char g_uart0txbuffer[CONFIG_UART4_TXBUFSIZE];
+static char g_uart4rxbuffer[CONFIG_UART4_RXBUFSIZE];
+static char g_uart4txbuffer[CONFIG_UART4_TXBUFSIZE];
 #endif
 
 #ifdef CONFIG_MINDGROVE_UART4
@@ -313,7 +313,7 @@ static uart_dev_t g_uart4port =
   .recv      =
   {
     .size    = CONFIG_UART4_RXBUFSIZE,
-    .buffer  = g_uart0rxbuffer,
+    .buffer  = g_uart4rxbuffer,
   },
   .xmit      =
   {
@@ -403,9 +403,8 @@ static int up_setup(struct uart_dev_s *dev)
 {
   struct up_dev_s *priv = (struct up_dev_s *)dev->priv;
 
-  uint16_t baud_count=CEIL_DIV_US(CLOCK_FREQUENCY_FPGA,16U*(priv->baud));
-  // uint16_t baud_count =16;
-//  printf("baud:, %d",baud_count0);
+  uint16_t baud_count=CEIL_DIV_US(CONFIG_MG_CLOCK_FREQUENCY,16U*(priv->baud));
+
   up_serialout(priv, UART_BAUD_OFFSET, baud_count);
   up_serialout(priv, UART_CTRL_OFFSET, 0x0000);
 
