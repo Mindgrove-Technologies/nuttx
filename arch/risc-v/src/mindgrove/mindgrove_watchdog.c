@@ -48,6 +48,11 @@
  * Included Files
  ****************************************************************************/
 
+ /*The driver behaves correctly when stepping through the instructions in debug
+mode—the hart resets as expected when the control register is written. However, 
+during normal execution, the same operation results in a dmcontrol/dmstatus
+error instead of triggering the reset. */
+
 #include <nuttx/config.h>
 
 #include <nuttx/arch.h>
