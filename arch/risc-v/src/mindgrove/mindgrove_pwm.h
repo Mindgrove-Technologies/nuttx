@@ -1,4 +1,3 @@
-#define MG_PWM_CLOCK_FREQ  35000000
 #define MG_PWM_PERIOD_MAX  65535
 
 /* Register accessors using priv->base */

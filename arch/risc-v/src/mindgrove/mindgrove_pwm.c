@@ -164,12 +164,12 @@ static int mg_pwm_start(FAR struct pwm_lowerhalf_s *dev,
 
   /* Calculate prescaler and period */
 
-  period = MG_PWM_CLOCK_FREQ / freq;
+  period = CONFIG_MG_CLOCK_FREQUENCY / freq;
 
   while (period > MG_PWM_PERIOD_MAX && prescaler < 0xFFFF)
     {
       prescaler++;
-      period = MG_PWM_CLOCK_FREQ / (freq * (prescaler + 1));
+      period = CONFIG_MG_CLOCK_FREQUENCY / (freq * (prescaler + 1));
     }
 
   /* Convert NuttX duty cycle (16-bit fraction, 0x0000–0xFFFF) to ticks */
